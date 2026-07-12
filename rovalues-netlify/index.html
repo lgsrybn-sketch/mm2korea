@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoVALUES — MM2 Values RU</title>
+<meta name="description" content="RoHUB — private gateway to the Korean MM2 server.">
+<meta name="theme-color" content="#0B3B30">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data:; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; media-src 'self'; connect-src 'none';">
+<meta name="color-scheme" content="dark">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%23FFE18A'/%3E%3Cstop offset='1' stop-color='%23FF8C42'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='18' fill='%230B3B30'/%3E%3Ccircle cx='43' cy='21' r='10' fill='url(%23g)'/%3E%3Cpath d='M13 47c8-13 17-16 30-8' fill='none' stroke='%237BDCC8' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M19 17h15v15H19z' fill='none' stroke='url(%23g)' stroke-width='5' transform='rotate(12 26.5 24.5)'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%230B3B30'/%3E%3Ccircle cx='43' cy='21' r='10' fill='%23FFD166'/%3E%3Cpath d='M13 47c8-13 17-16 30-8' fill='none' stroke='%237BDCC8' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M19 17h15v15H19z' fill='none' stroke='%23FFB45A' stroke-width='5' transform='rotate(12 26.5 24.5)'/%3E%3C/svg%3E">
+
+<style>
+  /* ============================================================
+     RoHUB — Tropical Link Hub
+     ССЫЛКИ МЕНЯЮТСЯ В ОДНОМ МЕСТЕ — блок «ВСТАВЬ СВОИ ССЫЛКИ»
+     внизу страницы (в <script>).
+     ============================================================ */
+  @property --spin {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+  }
+  :root {
+    --cream: #FFF6E3;
+    --cream-2: rgba(255, 246, 227, 0.75);
+    --gold: #FFD166;
+    --orange: #FF8C42;
+    --leaf: #0E3B2E;
+    --glass: rgba(7, 34, 28, 0.52);
+    --glass-border: rgba(255, 214, 120, 0.28);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; max-width: 100%; overflow-x: clip; }
+  body {
+    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    color: var(--cream);
+    background: #0A2B26;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ================= SCENE ================= */
+  .scene { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; contain: strict; }
+
+  /* ---- video background (включается, если задан BACKGROUND.video) ---- */
+  .bgvideo {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1.15s cubic-bezier(.2,.8,.2,1), transform 12s ease-out;
+    transform: scale(1.025);
+    will-change: opacity, transform;
+  }
+  body.has-video .bgvideo { opacity: 1; transform: scale(1); }
+  body:not(.has-video) .bgvideo, body:not(.has-video) .video-glow { display: none; }
+  .scrim {
+    position: absolute; inset: 0;
+    display: none;
+    background: linear-gradient(180deg,
+      rgba(4, 20, 16, 0.50) 0%,
+      rgba(4, 20, 16, 0.22) 38%,
+      rgba(4, 20, 16, 0.30) 65%,
+      rgba(4, 20, 16, 0.60) 100%);
+  }
+  body.has-video .scrim { display: block; }
+  body.has-video .sky, body.has-video .sea, body.has-video .sun,
+  body.has-video .glimmer, body.has-video .wave, body.has-video .cloud,
+  body.has-video .palm, body.has-video .horizon, body.has-video .island,
+  body.has-video #sparks { display: none; }
+  /* cinematic colour layer stays over real video */
+  .video-glow {
+    position: absolute; inset: -25%;
+    z-index: 2;
+    opacity: .38;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    background: radial-gradient(ellipse at 78% 50%, rgba(255, 184, 74, .44), transparent 33%),
+                radial-gradient(ellipse at 15% 76%, rgba(65, 205, 169, .18), transparent 42%);
+    animation: driftGlow 12s ease-in-out infinite alternate;
+  }
+  @keyframes driftGlow { to { transform: translate3d(-3%, 2%, 0) scale(1.08); } }
+  .scene > .vignette, .scene > .grain, .scene > .rain { z-index: 3; }
+
+  /* ---- rain overlay (BACKGROUND.rain: true) ---- */
+  .rain {
+    position: absolute; inset: -12%;
+    display: none;
+    transform: rotate(9deg);
+  }
+  body.has-rain .rain { display: block; }
+  .drop {
+    position: absolute;
+    top: -14vh;
+    width: 1.5px;
+    background: linear-gradient(180deg, rgba(220, 240, 255, 0) 0%, rgba(220, 240, 255, 0.5) 100%);
+    border-radius: 999px;
+    animation: rainFall linear infinite;
+  }
+  @keyframes rainFall {
+    from { transform: translateY(0); }
+    to   { transform: translateY(130vh); }
+  }
+
+  .sky {
+    position: absolute; inset: 0 0 43% 0;
+    background: linear-gradient(180deg,
+      #082520 0%, #10473B 38%, #2E6B4F 60%,
+      #9A7A33 82%, #E8B04B 94%, #FFCF6B 100%);
+  }
+  .sea {
+    position: absolute; inset: 57% 0 0 0;
+    background: linear-gradient(180deg,
+      #C99640 0%, #4E7C46 10%, #16604C 30%, #0B3D32 68%, #062420 100%);
+  }
+
+  /* glowing horizon line */
+  .horizon {
+    position: absolute;
+    top: calc(57% - 1px);
+    left: 0; width: 100%; height: 2px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 214, 130, 0.35) 30%,
+      rgba(255, 224, 150, 0.75) 62%,
+      #FFE9A8 73%,
+      rgba(255, 224, 150, 0.75) 84%,
+      transparent 100%);
+    filter: blur(1px);
+  }
+
+  /* distant island */
+  .island {
+    position: absolute;
+    top: calc(57% - 13px);
+    left: 11%;
+    width: 170px; height: 15px;
+    background: #0B2D24;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    opacity: 0.9;
+  }
+
+  /* early stars */
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: #FFF6E3;
+    animation: twinkle ease-in-out infinite alternate;
+  }
+  @keyframes twinkle {
+    from { opacity: 0.1; }
+    to   { opacity: 0.65; }
+  }
+
+  /* sun + halo */
+  .sun {
+    position: absolute;
+    left: 73%; top: 57%;
+    width: 190px; height: 190px;
+    transform: translate(-50%, -78%);
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 40%, #FFF3C4 0%, #FFD166 45%, #FF9E45 100%);
+    box-shadow:
+      0 0 60px 20px rgba(255, 190, 92, 0.55),
+      0 0 160px 70px rgba(255, 158, 69, 0.30);
+    animation: sunPulse 9s ease-in-out infinite alternate;
+  }
+  @keyframes sunPulse {
+    from { box-shadow: 0 0 60px 20px rgba(255,190,92,.55), 0 0 160px 70px rgba(255,158,69,.30); }
+    to   { box-shadow: 0 0 80px 30px rgba(255,190,92,.65), 0 0 200px 90px rgba(255,158,69,.38); }
+  }
+
+  /* sun reflection on water */
+  .glimmer {
+    position: absolute;
+    left: 73%; top: 57%;
+    width: 150px; height: 43%;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg,
+      rgba(255, 209, 102, 0.55) 0%,
+      rgba(255, 158, 69, 0.28) 40%,
+      rgba(255, 158, 69, 0.0) 90%);
+    filter: blur(7px);
+    clip-path: polygon(28% 0, 72% 0, 95% 100%, 5% 100%);
+    animation: shimmer 5s ease-in-out infinite alternate;
+  }
+  @keyframes shimmer {
+    from { opacity: 0.75; transform: translateX(-50%) scaleX(1); }
+    to   { opacity: 1;    transform: translateX(-50%) scaleX(1.12); }
+  }
+
+  /* clouds */
+  .cloud {
+    position: absolute;
+    height: 60px; width: 260px;
+    border-radius: 999px;
+    background: rgba(255, 236, 190, 0.10);
+    filter: blur(22px);
+    animation: cloudDrift linear infinite;
+  }
+  .cloud.c1 { top: 12%; left: -10%; animation-duration: 90s; }
+  .cloud.c2 { top: 24%; left: 40%; width: 340px; animation-duration: 120s; animation-delay: -40s; }
+  .cloud.c3 { top: 7%;  left: 70%; width: 200px; animation-duration: 75s; animation-delay: -20s; }
+  @keyframes cloudDrift {
+    from { transform: translateX(0); }
+    to   { transform: translateX(120vw); }
+  }
+
+  /* animated waves at the sea line */
+  .wave {
+    position: absolute;
+    left: 0; width: 100%;
+    height: 56px;
+    background-repeat: repeat-x;
+    background-size: 320px 56px;
+    animation: waveMove linear infinite;
+  }
+  .wave.w1 {
+    top: calc(57% - 28px);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 56'%3E%3Cpath d='M0 34 Q40 22 80 34 T160 34 T240 34 T320 34 V56 H0 Z' fill='%2318705A' fill-opacity='0.9'/%3E%3C/svg%3E");
+    animation-duration: 13s;
+  }
+  .wave.w2 {
+    top: calc(57% - 14px);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 56'%3E%3Cpath d='M0 30 Q40 19 80 30 T160 30 T240 30 T320 30 V56 H0 Z' fill='%23FFD166' fill-opacity='0.30'/%3E%3C/svg%3E");
+    animation-duration: 9s;
+    animation-direction: reverse;
+  }
+  .wave.w3 {
+    top: calc(57% - 4px);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 56'%3E%3Cpath d='M0 28 Q40 16 80 28 T160 28 T240 28 T320 28 V56 H0 Z' fill='%230C4437' fill-opacity='0.95'/%3E%3C/svg%3E");
+    animation-duration: 7s;
+  }
+  @keyframes waveMove {
+    from { background-position-x: 0; }
+    to   { background-position-x: 320px; }
+  }
+
+  /* palm silhouette */
+  .palm {
+    position: absolute;
+    bottom: -12px;
+    left: clamp(-90px, -4vw, 10px);
+    width: clamp(240px, 30vw, 420px);
+    transform-origin: 50% 100%;
+    animation: sway 8s ease-in-out infinite alternate;
+    filter: drop-shadow(0 10px 26px rgba(0, 0, 0, 0.45));
+  }
+  @keyframes sway {
+    from { transform: rotate(-1.4deg); }
+    to   { transform: rotate(1.4deg); }
+  }
+
+  /* warm floating sparks */
+  .spark {
+    position: absolute;
+    border-radius: 50%;
+    background: #FFD166;
+    box-shadow: 0 0 8px 2px rgba(255, 209, 102, 0.5);
+    bottom: -12px;
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(0) translateX(0); opacity: 0; }
+    12%  { opacity: 0.8; }
+    88%  { opacity: 0.25; }
+    100% { transform: translateY(-104vh) translateX(5vw); opacity: 0; }
+  }
+
+  /* film grain to kill the plastic look */
+  .grain {
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    opacity: 0.07;
+    mix-blend-mode: overlay;
+  }
+  .vignette {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 90% 80% at 50% 45%, transparent 55%, rgba(3, 18, 15, 0.55) 100%);
+  }
+
+  /* ================= CONTENT ================= */
+  .wrap {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 60px 24px 44px;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-family: "Lilita One", "Arial Black", Impact, sans-serif;
+    font-weight: 400;
+    font-size: clamp(46px, 9vw, 68px);
+    letter-spacing: 1.5px;
+    line-height: 1;
+    text-shadow: 0 4px 24px rgba(6, 30, 25, 0.65), 0 0 44px rgba(255, 190, 92, 0.28);
+    animation: rise 0.7s 0.1s cubic-bezier(.2,.9,.3,1) both;
+  }
+  h1 .grad {
+    background: linear-gradient(180deg, #FFE9A8 5%, #FFC94F 45%, #FF8C42 95%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .tagline {
+    margin-top: 14px;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--cream-2);
+    text-align: center;
+    max-width: 42ch;
+    text-shadow: 0 2px 12px rgba(6, 30, 25, 0.6);
+    animation: rise 0.7s 0.2s cubic-bezier(.2,.9,.3,1) both;
+  }
+  .badges {
+    display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; justify-content: center;
+    animation: rise 0.7s 0.3s cubic-bezier(.2,.9,.3,1) both;
+  }
+  .badge {
+    font-size: 13.5px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    color: var(--cream);
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    padding: 7px 14px;
+    border-radius: 999px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .badge b { color: var(--gold); }
+  .badge:nth-child(1) { animation: badgeFloat 5s ease-in-out infinite; }
+  .badge:nth-child(2) { animation: badgeFloat 5s -1.6s ease-in-out infinite; }
+  .badge:nth-child(3) { animation: badgeFloat 5s -3.1s ease-in-out infinite; }
+  @keyframes badgeFloat { 50% { transform: translateY(-3px); border-color: rgba(255,214,120,.56); } }
+
+  /* ---------- link cards with rotating outline ---------- */
+  .links {
+    width: 100%;
+    margin-top: 44px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .links.one-link { margin-top: 48px; }
+  .one-link .card {
+    min-height: 118px;
+    padding: 22px 24px;
+    background: linear-gradient(112deg, rgba(6, 38, 30, .76), rgba(23, 74, 54, .64));
+  }
+  .one-link .card::after {
+    content: "";
+    position: absolute; inset: 1px;
+    pointer-events: none;
+    border-radius: inherit;
+    background: linear-gradient(104deg, rgba(255, 223, 139, .08), transparent 39%, rgba(111, 220, 200, .09));
+  }
+  .card.korean { --ic: #FFCB61; }
+  .eyebrow {
+    display: block;
+    margin-bottom: 4px;
+    color: #FFD166;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+  }
+  .join-pill {
+    flex: none;
+    position: relative;
+    z-index: 1;
+    border: 1px solid rgba(255, 222, 136, .6);
+    border-radius: 999px;
+    padding: 10px 13px;
+    color: #FFF1C8;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    background: rgba(255, 187, 77, .12);
+    transition: background .25s, color .25s, transform .25s;
+  }
+  .join-pill::before {
+    content: "";
+    position: absolute; inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(108deg, transparent 24%, rgba(255,255,255,.72) 48%, transparent 69%);
+    transform: translateX(-130%);
+    animation: joinShine 3.8s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes joinShine { 18%, 100% { transform: translateX(130%); } }
+  .card:hover .join-pill { background: #FFD166; color: #174333; transform: translateX(2px) scale(1.04); }
+  .card {
+    position: relative;
+    display: flex; align-items: center; gap: 16px;
+    padding: 18px 20px;
+    border-radius: 20px;
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    text-decoration: none;
+    color: var(--cream);
+    box-shadow: 0 10px 30px rgba(3, 20, 16, 0.35), inset 0 1px 0 rgba(255, 246, 227, 0.09);
+    transition: transform 0.25s cubic-bezier(.2,.9,.3,1), background 0.25s, box-shadow 0.25s;
+    animation: rise 0.7s cubic-bezier(.2,.9,.3,1) both;
+  }
+  .card:nth-child(1) { animation-delay: 0.4s; }
+  .card:nth-child(2) { animation-delay: 0.5s; }
+  .card:nth-child(3) { animation-delay: 0.6s; }
+
+  /* rotating border: a conic gradient spinning around the card edge */
+  .card::before {
+    content: "";
+    position: absolute; inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background:
+      conic-gradient(from var(--spin),
+        rgba(255, 214, 120, 0.16) 0deg,
+        rgba(255, 214, 120, 0.16) 250deg,
+        #FFD166 300deg,
+        #FF8C42 330deg,
+        #FFE9A8 345deg,
+        rgba(255, 214, 120, 0.16) 360deg);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    animation: spinBorder 4.5s linear infinite;
+    pointer-events: none;
+  }
+  .card:nth-child(2)::before { animation-delay: -1.5s; }
+  .card:nth-child(3)::before { animation-delay: -3s; }
+  @keyframes spinBorder { to { --spin: 360deg; } }
+
+  .card:hover, .card:focus-visible {
+    transform: translateY(-3px) scale(1.015);
+    background: rgba(10, 46, 38, 0.62);
+    box-shadow: 0 14px 40px rgba(3, 20, 16, 0.5), 0 0 26px rgba(255, 190, 92, 0.18);
+  }
+  .card:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+  .card:active { transform: translateY(-1px) scale(0.99); }
+
+  .icon {
+    flex: none;
+    width: 52px; height: 52px;
+    border-radius: 15px;
+    display: grid; place-items: center;
+    background: color-mix(in srgb, var(--ic, var(--gold)) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ic, var(--gold)) 32%, transparent);
+    transition: transform 0.25s cubic-bezier(.2,1.4,.4,1);
+  }
+  .card:hover .icon { transform: scale(1.1) rotate(-4deg); }
+  .icon svg { width: 26px; height: 26px; fill: var(--ic, var(--gold)); }
+  .card.roblox   { --ic: #FF8566; }
+  .card.telegram { --ic: #7BDCC8; }
+  .card.discord  { --ic: #FFC94F; }
+
+  .card .meta { flex: 1; min-width: 0; }
+  .card .name {
+    display: block;
+    font-size: 17.5px; font-weight: 800; letter-spacing: 0.1px;
+  }
+  .card .desc {
+    display: block;
+    margin-top: 3px; font-size: 14px; font-weight: 600; color: var(--cream-2);
+  }
+
+  .arrow {
+    flex: none;
+    color: var(--cream-2);
+    transition: transform 0.25s ease, color 0.25s ease;
+  }
+  .card:hover .arrow { transform: translateX(4px); color: var(--gold); }
+
+  footer {
+    margin-top: auto;
+    padding-top: 48px;
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255, 246, 227, 0.55);
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(6, 30, 25, 0.6);
+    animation: rise 0.7s 0.72s cubic-bezier(.2,.9,.3,1) both;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 48px 16px 36px; }
+    .card { padding: 16px; gap: 14px; }
+    .icon { width: 46px; height: 46px; }
+    .palm { left: -70px; width: 250px; opacity: 0.9; }
+    .sun { width: 150px; height: 150px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001s !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001s !important;
+    }
+    .spark, .cloud { display: none; }
+  }
+
+
+  /* ================= VALUES NAVIGATION ================= */
+  :root { --side-w: 268px; --mobile-nav-h: 74px; }
+  .desktop-sidebar {
+    position: fixed; inset: 14px auto 14px 14px; z-index: 20;
+    width: var(--side-w); display: flex; flex-direction: column;
+    border: 1px solid rgba(255,214,120,.23); border-radius: 24px;
+    background: linear-gradient(160deg, rgba(5,29,24,.92), rgba(8,48,39,.82));
+    box-shadow: 0 22px 60px rgba(0,12,10,.42), inset 0 1px 0 rgba(255,255,255,.07);
+    backdrop-filter: blur(22px) saturate(1.18); -webkit-backdrop-filter: blur(22px) saturate(1.18);
+    overflow: hidden;
+  }
+  .side-brand { display:flex; align-items:center; gap:12px; padding:18px 17px 14px; border-bottom:1px solid rgba(255,214,120,.12); }
+  .side-logo { width:42px; height:42px; border-radius:13px; display:grid; place-items:center; flex:none;
+    background:linear-gradient(145deg,#FFE18A,#FF994B); color:#10362d; font-weight:1000; font-size:17px;
+    box-shadow:0 7px 22px rgba(255,154,71,.25), inset 0 1px 0 rgba(255,255,255,.55); transform:rotate(-3deg); }
+  .side-brand strong { display:block; font-size:15px; letter-spacing:.5px; }
+  .side-brand small { display:block; margin-top:2px; color:rgba(255,246,227,.52); font-size:10px; font-weight:800; letter-spacing:1.1px; }
+  .side-scroll { overflow:auto; padding:13px 10px 18px; scrollbar-width:thin; scrollbar-color:rgba(255,209,102,.35) transparent; }
+  .nav-group + .nav-group { margin-top:13px; }
+  .nav-label { padding:0 10px 6px; color:rgba(255,209,102,.72); font-size:9px; line-height:1; font-weight:1000; letter-spacing:1.55px; }
+  .side-link { position:relative; display:flex; align-items:center; gap:10px; min-height:37px; margin:2px 0; padding:7px 10px;
+    border:1px solid transparent; border-radius:11px; color:rgba(255,246,227,.72); text-decoration:none; font-size:12.5px; font-weight:800;
+    transition:transform .2s ease, color .2s ease, border-color .2s ease, background .2s ease; }
+  .side-link:hover, .side-link:focus-visible { color:#fff8e7; transform:translateX(3px); outline:none; border-color:rgba(255,209,102,.2); background:rgba(255,209,102,.08); }
+  .side-link.active { color:#fff; border-color:rgba(255,209,102,.34); background:linear-gradient(90deg,rgba(255,188,75,.16),rgba(77,208,174,.08)); box-shadow:inset 3px 0 #FFD166; }
+  .nav-icon { width:25px; height:25px; display:grid; place-items:center; flex:none; border-radius:8px; color:#FFD166;
+    background:rgba(255,209,102,.09); border:1px solid rgba(255,209,102,.12); font-size:10px; font-weight:1000; letter-spacing:-.3px; }
+  .side-link.active .nav-icon { color:#123b31; background:#FFD166; box-shadow:0 0 18px rgba(255,209,102,.24); }
+  .nav-dot { margin-left:auto; width:5px; height:5px; border-radius:50%; background:#6FDBC0; box-shadow:0 0 10px #6FDBC0; opacity:.7; }
+  .desktop-sidebar + .scene ~ .wrap, body > .wrap { transition:margin .3s ease; }
+  @media (min-width: 901px) {
+    .wrap { margin-left:calc(var(--side-w) + 14px); margin-right:0; max-width:none; padding-left:max(36px, calc((100vw - var(--side-w) - 600px)/2)); padding-right:max(36px, calc((100vw - var(--side-w) - 600px)/2)); }
+    .wrap > * { width:min(100%,560px); }
+    .wrap h1 { width:auto; }
+  }
+
+  .mobile-bottom, .mobile-drawer, .drawer-backdrop { display:none; }
+  .nav-toast { position:fixed; z-index:80; left:50%; bottom:24px; transform:translate(-50%,20px); opacity:0; pointer-events:none;
+    padding:11px 15px; border:1px solid rgba(255,209,102,.35); border-radius:999px; background:rgba(5,29,24,.94); color:#fff6e3;
+    font-size:12px; font-weight:900; box-shadow:0 12px 34px rgba(0,0,0,.38); transition:.25s ease; }
+  .nav-toast.show { opacity:1; transform:translate(-50%,0); }
+
+  @media (max-width:900px) {
+    .cloud { display:none; }
+    body { padding-bottom:calc(var(--mobile-nav-h) + env(safe-area-inset-bottom)); }
+    .desktop-sidebar { display:none; }
+    .wrap { min-height:calc(100vh - var(--mobile-nav-h)); padding-bottom:40px; }
+    .mobile-bottom { position:fixed; display:grid; grid-template-columns:repeat(5,1fr); z-index:60; left:10px; right:10px;
+      bottom:max(8px,env(safe-area-inset-bottom)); min-height:64px; padding:7px 7px 6px; border-radius:20px;
+      border:1px solid rgba(255,214,120,.27); background:rgba(5,28,23,.91); box-shadow:0 18px 55px rgba(0,0,0,.48), inset 0 1px 0 rgba(255,255,255,.07);
+      backdrop-filter:blur(22px) saturate(1.2); -webkit-backdrop-filter:blur(22px) saturate(1.2); }
+    .bottom-btn { appearance:none; border:0; background:none; color:rgba(255,246,227,.58); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+      min-width:0; border-radius:14px; font:800 9px/1 Nunito,sans-serif; text-decoration:none; cursor:pointer; transition:.2s ease; }
+    .bottom-btn svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+    .bottom-btn.active, .bottom-btn:active { color:#FFD166; background:rgba(255,209,102,.09); transform:translateY(-1px); }
+    .drawer-backdrop { display:block; position:fixed; inset:0; z-index:68; background:rgba(1,12,10,.55); opacity:0; pointer-events:none; transition:opacity .3s; backdrop-filter:blur(3px); }
+    .mobile-drawer { display:flex; position:fixed; z-index:70; left:10px; right:10px; bottom:calc(var(--mobile-nav-h) + 16px + env(safe-area-inset-bottom));
+      max-height:min(72vh,620px); flex-direction:column; border:1px solid rgba(255,214,120,.27); border-radius:24px;
+      background:linear-gradient(160deg,rgba(5,29,24,.98),rgba(8,48,39,.96)); box-shadow:0 25px 80px rgba(0,0,0,.6);
+      transform:translateY(28px) scale(.98); opacity:0; pointer-events:none; transition:.32s cubic-bezier(.2,.9,.25,1); overflow:hidden; }
+    body.nav-open .drawer-backdrop { opacity:1; pointer-events:auto; }
+    body.nav-open .mobile-drawer { transform:none; opacity:1; pointer-events:auto; }
+    .drawer-head { display:flex; align-items:center; padding:14px 15px; border-bottom:1px solid rgba(255,214,120,.13); }
+    .drawer-head strong { font-size:14px; }
+    .drawer-head span { color:#FFD166; }
+    .drawer-close { margin-left:auto; width:34px; height:34px; border:1px solid rgba(255,214,120,.2); border-radius:11px; color:#FFF6E3; background:rgba(255,255,255,.04); font-size:20px; cursor:pointer; }
+    .drawer-content { overflow:auto; padding:12px 10px 18px; display:grid; grid-template-columns:1fr 1fr; gap:13px 8px; }
+    .drawer-content .nav-group { margin:0; }
+    .drawer-content .nav-group.wide { grid-column:1/-1; }
+    .drawer-content .side-link { min-height:36px; font-size:12px; }
+    .nav-toast { bottom:calc(var(--mobile-nav-h) + 20px + env(safe-area-inset-bottom)); }
+  }
+  @media (max-width:520px) {
+    .drawer-content { grid-template-columns:1fr 1fr; }
+    .drawer-content .nav-icon { width:23px; height:23px; }
+    .bottom-btn span { max-width:58px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .one-link .card { min-height:108px; }
+  }
+
+
+
+  /* ================= CATALOG + LANGUAGE ================= */
+  .language-switcher { position:fixed; z-index:55; top:18px; right:18px; }
+  .language-switcher select { appearance:none; min-width:118px; height:42px; padding:0 34px 0 13px; border-radius:14px;
+    border:1px solid rgba(255,214,120,.32); color:#fff8e7; background:rgba(5,29,24,.86); box-shadow:0 10px 28px rgba(0,0,0,.25);
+    backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); font:800 12px Nunito,sans-serif; cursor:pointer; outline:none; }
+  .language-switcher::after { content:'⌄'; position:absolute; right:13px; top:9px; color:#FFD166; pointer-events:none; font-size:17px; }
+  .language-switcher select:focus { border-color:#FFD166; box-shadow:0 0 0 3px rgba(255,209,102,.12),0 10px 28px rgba(0,0,0,.25); }
+  .home-view { display:contents; }
+  .catalog-view { display:none; width:min(1120px,100%)!important; margin:0 auto; animation:catalogIn .4s ease both; }
+  body.catalog-mode .home-view { display:none; }
+  body.catalog-mode .catalog-view { display:block; }
+  body.catalog-mode .wrap { max-width:none; align-items:stretch; padding-top:30px; }
+  body.catalog-mode .scene { filter:saturate(.78) brightness(.62); }
+  @keyframes catalogIn { from{opacity:0;transform:translateY(12px)} }
+  .catalog-hero { position:relative; overflow:hidden; padding:23px 24px; border:1px solid rgba(255,214,120,.24); border-radius:24px;
+    background:linear-gradient(120deg,rgba(5,34,28,.93),rgba(16,77,58,.8)); box-shadow:0 20px 60px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.08); }
+  .catalog-hero::after { content:''; position:absolute; width:260px;height:260px;right:-80px;top:-120px;border-radius:50%; background:rgba(255,192,75,.13);filter:blur(8px); }
+  .catalog-kicker { color:#FFD166;font-size:10px;font-weight:1000;letter-spacing:1.8px; }
+  .catalog-title { margin-top:5px;font:400 clamp(30px,5vw,48px)/1.05 'Lilita One',Impact,sans-serif;letter-spacing:.5px; }
+  .catalog-desc { max-width:680px;margin-top:9px;color:rgba(255,246,227,.68);font-size:13px;font-weight:700;line-height:1.55; }
+  .catalog-meta { display:flex;flex-wrap:wrap;gap:8px;margin-top:15px; }
+  .catalog-meta span { padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,214,120,.14);font-size:10px;font-weight:900;color:rgba(255,246,227,.75); }
+  .catalog-controls { position:sticky;top:12px;z-index:10;display:grid;grid-template-columns:minmax(190px,1fr) 180px 190px auto;gap:9px;margin:13px 0;padding:10px;
+    border:1px solid rgba(255,214,120,.18);border-radius:18px;background:rgba(4,28,23,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px); }
+  .control { width:100%;height:42px;border:1px solid rgba(255,214,120,.18);border-radius:12px;background:rgba(255,255,255,.045);color:#fff6e3;padding:0 12px;font:800 12px Nunito,sans-serif;outline:none; }
+  .control::placeholder{color:rgba(255,246,227,.4)} .control:focus{border-color:#FFD166}
+  select.control option{background:#082f27;color:#fff}
+  .clear-btn { border:1px solid rgba(255,214,120,.25);border-radius:12px;background:rgba(255,209,102,.08);color:#FFD166;padding:0 14px;font:900 11px Nunito;cursor:pointer; }
+  .tier-tabs { display:flex;gap:7px;overflow:auto;padding:1px 0 10px;scrollbar-width:none; }
+  .tier-tab { flex:none;border:1px solid rgba(255,214,120,.18);border-radius:999px;background:rgba(5,34,28,.7);color:rgba(255,246,227,.64);padding:8px 13px;font:900 10px Nunito;cursor:pointer; }
+  .tier-tab.active{color:#153a31;background:#FFD166;border-color:#FFD166;box-shadow:0 5px 20px rgba(255,209,102,.18)}
+  .result-line { display:flex;justify-content:space-between;gap:12px;align-items:center;margin:2px 2px 10px;color:rgba(255,246,227,.55);font-size:11px;font-weight:800; }
+  .items-grid { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px; }
+  .value-card { position:relative;min-width:0;overflow:hidden;border:1px solid rgba(255,214,120,.17);border-radius:19px;padding:15px;
+    background:linear-gradient(145deg,rgba(5,36,29,.9),rgba(12,61,47,.72));box-shadow:0 12px 30px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.055);transition:.22s ease; }
+  .value-card:hover{transform:translateY(-3px);border-color:rgba(255,209,102,.43);box-shadow:0 18px 38px rgba(0,0,0,.28),0 0 25px rgba(255,190,80,.07)}
+  .value-card::after{content:'';position:absolute;inset:auto -35px -55px auto;width:110px;height:110px;border-radius:50%;background:rgba(255,209,102,.045)}
+  .item-top{display:flex;align-items:flex-start;gap:9px}.item-gem{position:relative;width:54px;height:54px;flex:none;display:grid;place-items:center;overflow:hidden;border-radius:11px;background:linear-gradient(145deg,rgba(255,209,102,.22),rgba(98,220,184,.1));border:1px solid rgba(255,209,102,.25);color:#FFD166;font-weight:1000}.item-gem img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .25s}.item-gem img.loaded{opacity:1;background:rgba(7,38,31,.9)}
+  .item-tier{color:#71d8bd;font-size:8px;font-weight:1000;letter-spacing:1.2px;text-transform:uppercase}.item-name{margin-top:2px;font-size:14px;font-weight:1000;line-height:1.15}.item-contains{min-height:34px;margin-top:10px;color:rgba(255,246,227,.55);font-size:10.5px;font-weight:700;line-height:1.45}
+  .value-row{display:flex;align-items:flex-end;justify-content:space-between;gap:9px;margin-top:11px;padding-top:10px;border-top:1px solid rgba(255,255,255,.065)}
+  .value-label{display:block;color:rgba(255,246,227,.42);font-size:8px;font-weight:1000;letter-spacing:1px}.value-number{display:block;margin-top:2px;color:#FFE18A;font-size:20px;font-weight:1000;letter-spacing:-.5px}.range-value{display:block;margin-top:3px;color:rgba(255,246,227,.44);font-size:8px;font-weight:900;letter-spacing:.25px}.change{font-size:10px;font-weight:1000}.change.up{color:#72e0a6}.change.down{color:#ff8877}.change.flat{color:rgba(255,246,227,.45)}
+  .stat-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}.stat{padding:7px 8px;border-radius:10px;background:rgba(255,255,255,.035);color:rgba(255,246,227,.58);font-size:9px;font-weight:900}.stat b{float:right;color:#fff6e3}.stability{display:inline-flex;margin-top:9px;padding:5px 8px;border-radius:999px;font-size:8px;font-weight:1000;letter-spacing:.6px;text-transform:uppercase}.stable{color:#76dec1;background:rgba(54,205,164,.1)}.doing-well{color:#8fea9e;background:rgba(85,221,119,.1)}.fluctuating{color:#ffd06a;background:rgba(255,190,67,.1)}.underpaid-for{color:#ff9b88;background:rgba(255,113,91,.1)}.overpaid-for{color:#9ce7ff;background:rgba(84,196,255,.11)}.untradable{color:#c8b5ff;background:rgba(143,104,255,.12)}
+  .empty-state{grid-column:1/-1;padding:45px 20px;text-align:center;border:1px dashed rgba(255,214,120,.22);border-radius:20px;color:rgba(255,246,227,.56);font-weight:800}
+  .catalog-note{margin-top:13px;padding:12px 14px;border-left:3px solid #FFD166;border-radius:10px;background:rgba(255,209,102,.06);color:rgba(255,246,227,.62);font-size:10px;font-weight:700;line-height:1.5}
+  @media(max-width:1100px){.items-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.catalog-controls{grid-template-columns:1fr 1fr}.clear-btn{height:42px}}
+  @media(max-width:900px){.language-switcher{top:10px;right:10px}.language-switcher select{min-width:100px;height:38px}.catalog-view{padding-top:36px}.catalog-controls{top:8px}.items-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:620px){body.catalog-mode .wrap{padding:8px 10px 28px}.catalog-view{padding-top:46px}.catalog-hero{padding:18px 16px;border-radius:20px}.catalog-controls{grid-template-columns:1fr 1fr;padding:8px}.catalog-controls .search{grid-column:1/-1}.items-grid{grid-template-columns:1fr}.value-card{padding:14px}.catalog-title{font-size:32px}.result-line{font-size:10px}.language-switcher select{min-width:96px}}
+
+
+  /* ===== RoVALUES 2.0 visual polish ===== */
+  .live-strip{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:18px;color:#ffe08a;font-size:10px;font-weight:1000;letter-spacing:1.25px;text-shadow:0 2px 10px rgba(0,0,0,.35)}
+  .live-strip b{color:rgba(255,255,255,.25)}.pulse-dot{width:7px;height:7px;border-radius:50%;background:#67e4a6;box-shadow:0 0 0 0 rgba(103,228,166,.55);animation:livePulse 1.8s infinite}
+  @keyframes livePulse{70%{box-shadow:0 0 0 8px rgba(103,228,166,0)}100%{box-shadow:0 0 0 0 rgba(103,228,166,0)}}
+  .catalog-join{position:absolute;right:22px;bottom:20px;z-index:2;display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:0 15px;border-radius:13px;text-decoration:none;color:#153a31;background:linear-gradient(135deg,#ffe08a,#ffb44f);font-size:11px;font-weight:1000;box-shadow:0 10px 24px rgba(255,175,64,.2);transition:.2s ease}
+  .catalog-join:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(255,175,64,.3)}
+  .catalog-hero{min-height:176px;padding-right:220px}.catalog-meta{max-width:650px}
+  .side-brand strong{font-size:16px}.side-logo{background-image:url('assets/ui/godlies.webp');background-size:76%;background-repeat:no-repeat;background-position:center;font-size:0}
+  .side-link .nav-icon{background-size:72%;background-repeat:no-repeat;background-position:center;color:transparent;font-size:0}
+  .side-link[data-nav="Home"] .nav-icon{background-image:url('assets/ui/home.webp')}.side-link[data-nav="Trading Servers"] .nav-icon{background-image:url('assets/ui/servers.webp')}.side-link[data-nav="Sets"] .nav-icon{background-image:url('assets/ui/sets.webp')}.side-link[data-nav="Uniques"] .nav-icon{background-image:url('assets/ui/uniques.webp')}.side-link[data-nav="Evos"] .nav-icon{background-image:url('assets/ui/evos.webp')}.side-link[data-nav="Ancients"] .nav-icon{background-image:url('assets/ui/ancients.webp')}.side-link[data-nav="Vintages"] .nav-icon{background-image:url('assets/ui/vintages.webp')}.side-link[data-nav="Chromas"] .nav-icon{background-image:url('assets/ui/chromas.webp')}.side-link[data-nav="Godlies"] .nav-icon{background-image:url('assets/ui/godlies.webp')}.side-link[data-nav="Legendaries"] .nav-icon{background-image:url('assets/ui/legendaries.webp')}.side-link[data-nav="Rares"] .nav-icon{background-image:url('assets/ui/rares.webp')}.side-link[data-nav="Pets"] .nav-icon{background-image:url('assets/ui/pets.webp')}.side-link[data-nav="Misc. Items"] .nav-icon{background-image:url('assets/ui/misc.webp')}.side-link[data-nav="Untradables"] .nav-icon{background-image:url('assets/ui/untradables.webp')}.side-link[data-nav="Roblox"] .nav-icon{background-image:url('assets/ui/roblox.webp')}
+  .item-gem{width:66px;height:66px;border-radius:15px;background:radial-gradient(circle at 30% 20%,rgba(255,224,138,.19),rgba(0,0,0,.08));box-shadow:inset 0 1px rgba(255,255,255,.08)}
+  .item-gem img{padding:4px;filter:drop-shadow(0 7px 7px rgba(0,0,0,.3))}.item-top{align-items:center}.item-name{font-size:15px}.value-card{isolation:isolate}.value-card:hover .item-gem img{transform:scale(1.08) rotate(-2deg)}.item-gem img{transition:transform .25s ease,opacity .25s}
+  .value-card:nth-child(6n+1){--card-accent:#ffd166}.value-card:nth-child(6n+2){--card-accent:#6fdbc0}.value-card:nth-child(6n+3){--card-accent:#ff9a62}.value-card::before{content:'';position:absolute;inset:0 auto 0 0;width:2px;background:linear-gradient(transparent,var(--card-accent,#ffd166),transparent);opacity:.55}
+  .side-link .nav-icon{color:#FFD166;font-size:10px}
+  .side-link[data-nav="Home"] .nav-icon,.side-link[data-nav="Trading Servers"] .nav-icon,.side-link[data-nav="Sets"] .nav-icon,.side-link[data-nav="Uniques"] .nav-icon,.side-link[data-nav="Evos"] .nav-icon,.side-link[data-nav="Ancients"] .nav-icon,.side-link[data-nav="Vintages"] .nav-icon,.side-link[data-nav="Chromas"] .nav-icon,.side-link[data-nav="Godlies"] .nav-icon,.side-link[data-nav="Legendaries"] .nav-icon,.side-link[data-nav="Rares"] .nav-icon,.side-link[data-nav="Pets"] .nav-icon,.side-link[data-nav="Misc. Items"] .nav-icon,.side-link[data-nav="Untradables"] .nav-icon,.side-link[data-nav="Roblox"] .nav-icon{color:transparent;font-size:0}
+  @media(max-width:620px){.catalog-hero{padding-right:16px;padding-bottom:76px}.catalog-join{left:16px;right:16px;bottom:16px;justify-content:center}.item-gem{width:72px;height:72px}.live-strip{font-size:9px}}
+
+
+
+  /* ================= JOIN EXPERIENCE V2 ================= */
+  html,body{max-width:100%;overflow-x:hidden}
+  .home-view{display:flex;flex-direction:column;align-items:center;width:100%;}
+  .hero-kicker{display:inline-flex;align-items:center;gap:9px;min-height:32px;margin-bottom:14px;padding:6px 12px;border:1px solid rgba(255,226,149,.28);border-radius:999px;background:rgba(5,34,27,.48);backdrop-filter:blur(12px);color:#ffe6a6;font-size:10px;font-weight:950;letter-spacing:1.2px;text-transform:uppercase;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 10px 30px rgba(2,19,15,.18);animation:rise .65s both}
+  .hero-kicker-dot{width:7px;height:7px;border-radius:50%;background:#72e5a9;box-shadow:0 0 0 5px rgba(114,229,169,.1),0 0 18px rgba(114,229,169,.75);animation:livePulse 1.8s infinite}
+  .home-view h1{position:relative}
+  .home-view h1::after{content:'';position:absolute;left:15%;right:15%;bottom:-10px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,209,102,.75),transparent);filter:drop-shadow(0 0 8px rgba(255,183,77,.7))}
+  .join-shell{position:relative;width:100%;margin-top:34px;padding:1px;border-radius:26px;background:linear-gradient(135deg,rgba(255,214,120,.72),rgba(255,139,66,.14) 35%,rgba(107,228,194,.42) 72%,rgba(255,214,120,.7));box-shadow:0 24px 80px rgba(2,20,15,.45),0 0 55px rgba(255,181,66,.12);animation:rise .75s .28s cubic-bezier(.2,.9,.3,1) both}
+  .join-shell::before{content:'';position:absolute;inset:-18px;border-radius:38px;background:conic-gradient(from var(--spin),transparent 0 70%,rgba(255,199,92,.17),transparent 88%);filter:blur(12px);animation:spinBorder 7s linear infinite;pointer-events:none}
+  .join-panel{position:relative;overflow:hidden;border-radius:25px;padding:18px;background:linear-gradient(145deg,rgba(5,37,29,.94),rgba(10,54,42,.89));backdrop-filter:blur(20px)}
+  .join-panel::after{content:'';position:absolute;width:210px;height:210px;right:-95px;top:-105px;border-radius:50%;background:radial-gradient(circle,rgba(255,202,91,.22),transparent 67%);pointer-events:none}
+  .join-status{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;color:rgba(255,246,227,.64);font-size:10px;font-weight:900;letter-spacing:.9px;text-transform:uppercase}
+  .join-status span:first-child{display:flex;align-items:center;gap:7px}.join-status i{width:6px;height:6px;border-radius:50%;background:#72e5a9;box-shadow:0 0 12px #72e5a9}
+  .join-card.card{min-height:124px;padding:18px;border-radius:19px;background:linear-gradient(108deg,rgba(255,255,255,.055),rgba(255,196,84,.055));box-shadow:none;border:1px solid rgba(255,231,166,.11)}
+  .join-card.card::before{padding:1px;opacity:.7}.join-card.card::after{display:none}
+  .join-card .icon{width:58px;height:58px;border-radius:18px;background:linear-gradient(145deg,rgba(255,210,103,.18),rgba(255,132,70,.08));box-shadow:inset 0 1px rgba(255,255,255,.1),0 10px 28px rgba(0,0,0,.18)}
+  .join-card .name{font-size:19px}.join-card .desc{max-width:34ch;line-height:1.4}
+  .join-pill{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 15px;border-radius:13px;background:linear-gradient(135deg,#ffe08a,#ffae49);border:0;color:#123b30;box-shadow:0 10px 24px rgba(255,174,73,.2);white-space:nowrap}
+  .join-pill svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .join-actions{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:12px}
+  .join-help{min-height:54px;display:flex;align-items:center;gap:12px;text-align:left;padding:10px 14px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.045);color:#fff6e3;cursor:pointer;transition:.22s ease}
+  .join-help:hover{transform:translateY(-2px);border-color:rgba(255,215,120,.38);background:rgba(255,211,108,.08)}
+  .join-help:focus-visible,.join-modal-close:focus-visible,.guide-tab:focus-visible{outline:2px solid #ffd166;outline-offset:3px}
+  .join-help-icon{flex:none;width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:rgba(123,220,200,.11);color:#8de5d1;font-weight:1000;border:1px solid rgba(123,220,200,.2)}
+  .join-help-copy{display:flex;flex-direction:column;gap:1px}.join-help-copy strong{font-size:13px}.join-help-copy small{font-size:11px;color:rgba(255,246,227,.62);line-height:1.3}
+  .join-help-arrow{margin-left:auto;color:#ffd166;font-size:18px;transition:.2s}.join-help:hover .join-help-arrow{transform:translateX(3px)}
+  .trust-chip{min-width:116px;display:flex;align-items:center;justify-content:center;gap:7px;padding:0 12px;border:1px solid rgba(114,229,169,.18);border-radius:16px;background:rgba(114,229,169,.07);color:#bdf5d7;font-size:10px;font-weight:900;line-height:1.25;text-align:center}
+  .trust-chip svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2}
+  .join-safety{display:flex;align-items:flex-start;gap:8px;margin:12px 3px 0;color:rgba(255,246,227,.52);font-size:10px;line-height:1.45}.join-safety b{color:#ffd987}.join-safety svg{flex:none;width:14px;height:14px;margin-top:1px;fill:none;stroke:#ffd987;stroke-width:2}
+
+  .join-modal{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;padding:20px}
+  .join-modal.open{display:flex}.join-modal-backdrop{position:absolute;inset:0;background:rgba(2,15,12,.76);backdrop-filter:blur(12px);animation:fadeIn .22s ease both}
+  .join-modal-dialog{position:relative;width:min(720px,100%);max-height:min(760px,calc(100vh - 32px));overflow:auto;border:1px solid rgba(255,226,151,.22);border-radius:24px;background:linear-gradient(150deg,#0a2e25 0%,#081f1a 100%);color:#fff6e3;box-shadow:0 34px 110px rgba(0,0,0,.65),inset 0 1px rgba(255,255,255,.07);animation:modalIn .32s cubic-bezier(.2,.9,.3,1) both}
+  .join-modal-head{position:sticky;top:0;z-index:3;display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:22px 22px 16px;background:linear-gradient(180deg,rgba(10,46,37,.98),rgba(10,46,37,.91));border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(16px)}
+  .join-modal-kicker{color:#ffd166;font-size:10px;font-weight:950;letter-spacing:1.3px;text-transform:uppercase}.join-modal-title{margin-top:5px;font-size:26px;line-height:1.15}.join-modal-close{flex:none;width:42px;height:42px;border:1px solid rgba(255,255,255,.12);border-radius:13px;background:rgba(255,255,255,.05);color:#fff;font-size:23px;cursor:pointer}
+  .join-modal-body{padding:20px 22px 24px}.join-modal-intro{margin:0 0 16px;color:rgba(255,246,227,.68);font-size:14px;line-height:1.55;max-width:64ch}
+  .guide-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:5px;border:1px solid rgba(255,255,255,.09);border-radius:15px;background:rgba(255,255,255,.035)}
+  .guide-tab{min-height:44px;padding:8px;border:0;border-radius:11px;background:transparent;color:rgba(255,246,227,.62);font-size:11px;font-weight:900;cursor:pointer;transition:.2s}.guide-tab.active{background:linear-gradient(135deg,rgba(255,209,102,.19),rgba(255,139,66,.09));color:#ffe39a;box-shadow:inset 0 0 0 1px rgba(255,211,111,.2)}
+  .guide-panel{padding-top:18px}.guide-heading{font-size:17px;margin-bottom:4px}.guide-summary{color:rgba(255,246,227,.63);font-size:12px;line-height:1.5;margin-bottom:14px}
+  .guide-steps{display:grid;gap:9px;counter-reset:joinstep}.guide-step{position:relative;display:grid;grid-template-columns:34px 1fr;gap:12px;padding:13px;border:1px solid rgba(255,255,255,.09);border-radius:15px;background:rgba(255,255,255,.035);animation:stepIn .35s both}.guide-step:nth-child(2){animation-delay:.04s}.guide-step:nth-child(3){animation-delay:.08s}.guide-step:nth-child(4){animation-delay:.12s}
+  .guide-step-num{width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:linear-gradient(145deg,rgba(255,210,103,.19),rgba(255,139,66,.09));color:#ffe097;font-size:12px;font-weight:1000;border:1px solid rgba(255,214,120,.18)}.guide-step strong{display:block;font-size:13px;margin-bottom:3px}.guide-step p{margin:0;color:rgba(255,246,227,.64);font-size:12px;line-height:1.5}.guide-step code{padding:2px 5px;border-radius:6px;background:rgba(255,255,255,.07);color:#ffe19a;font-family:inherit;font-weight:850}
+  .security-callout{display:flex;gap:11px;margin-top:16px;padding:13px;border:1px solid rgba(114,229,169,.17);border-radius:15px;background:rgba(114,229,169,.065);color:#c8f7dd;font-size:11px;line-height:1.5}.security-callout svg{flex:none;width:19px;height:19px;fill:none;stroke:#72e5a9;stroke-width:2}
+  body.modal-open{overflow:hidden}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes modalIn{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}@keyframes stepIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @media(max-width:620px){.hero-kicker{margin-top:4px;font-size:9px}.home-view h1{font-size:48px}.tagline{font-size:15px}.badges{gap:7px;margin-top:16px}.badge{font-size:11px;padding:6px 10px}.join-shell{margin-top:25px;border-radius:22px}.join-panel{padding:12px;border-radius:21px}.join-card.card{min-height:0;align-items:flex-start;padding:14px}.join-card .icon{width:48px;height:48px;border-radius:15px}.join-card .name{font-size:16px}.join-card .desc{font-size:12px}.join-pill{position:absolute;right:13px;bottom:13px;min-height:38px;padding:0 11px;font-size:9px}.join-card .meta{padding-bottom:42px}.join-actions{grid-template-columns:1fr}.trust-chip{min-height:44px}.join-modal{padding:8px}.join-modal-dialog{max-height:calc(100vh - 16px);border-radius:20px}.join-modal-head{padding:18px 16px 14px}.join-modal-title{font-size:21px}.join-modal-body{padding:16px}.guide-tabs{grid-template-columns:1fr}.guide-tab{min-height:40px}.guide-step{grid-template-columns:30px 1fr;padding:11px;gap:10px}.guide-step-num{width:30px;height:30px}.language-switcher{z-index:80}}
+
+</style>
+</head>
+<body>
+  <aside class="desktop-sidebar" aria-label="Values navigation">
+    <div class="side-brand"><div class="side-logo">RV</div><div><strong>RoVALUES</strong><small>MM2 • RU DATABASE</small></div></div>
+    <div class="side-scroll">
+      <section class="nav-group wide">
+        <div class="nav-label">MAIN PAGES</div>
+        <a class="side-link active" href="#home" data-nav="Home"><span class="nav-icon">H</span><span>Home</span><i class="nav-dot"></i></a>
+        <a class="side-link" href="#trading" data-nav="Trading Servers"><span class="nav-icon">TS</span><span>Trading Servers</span></a>
+        <a class="side-link" href="#trade" data-nav="MM2 Trading"><span class="nav-icon">↔</span><span>MM2 Trading</span></a>
+      </section>
+      <section class="nav-group wide">
+        <div class="nav-label">GAME</div>
+        <a class="side-link" href="#mm2" data-nav="Murder Mystery 2"><span class="nav-icon">M2</span><span>Murder Mystery 2</span><i class="nav-dot"></i></a>
+      </section>
+      <section class="nav-group">
+        <div class="nav-label">CATEGORIES</div>
+        <a class="side-link" href="#sets" data-nav="Sets"><span class="nav-icon">S</span><span>Sets</span></a>
+        <a class="side-link" href="#uniques" data-nav="Uniques"><span class="nav-icon">U</span><span>Uniques</span></a>
+        <a class="side-link" href="#evos" data-nav="Evos"><span class="nav-icon">E</span><span>Evos</span></a>
+        <a class="side-link" href="#ancients" data-nav="Ancients"><span class="nav-icon">A</span><span>Ancients</span></a>
+        <a class="side-link" href="#vintages" data-nav="Vintages"><span class="nav-icon">V</span><span>Vintages</span></a>
+        <a class="side-link" href="#chromas" data-nav="Chromas"><span class="nav-icon">C</span><span>Chromas</span></a>
+        <a class="side-link" href="#godlies" data-nav="Godlies"><span class="nav-icon">G</span><span>Godlies</span><i class="nav-dot"></i></a>
+      </section>
+      <section class="nav-group">
+        <div class="nav-label">RARITIES</div>
+        <a class="side-link" href="#legendaries" data-nav="Legendaries"><span class="nav-icon">L</span><span>Legendaries</span></a>
+        <a class="side-link" href="#rares" data-nav="Rares"><span class="nav-icon">R</span><span>Rares</span></a>
+        <a class="side-link" href="#uncommons" data-nav="Uncommons"><span class="nav-icon">UC</span><span>Uncommons</span></a>
+        <a class="side-link" href="#commons" data-nav="Commons"><span class="nav-icon">C</span><span>Commons</span></a>
+        <a class="side-link" href="#pets" data-nav="Pets"><span class="nav-icon">P</span><span>Pets</span></a>
+        <a class="side-link" href="#misc" data-nav="Misc. Items"><span class="nav-icon">+</span><span>Misc. Items</span></a>
+        <a class="side-link" href="#untradables" data-nav="Untradables"><span class="nav-icon">×</span><span>Untradables</span></a>
+      </section>
+      <section class="nav-group">
+        <div class="nav-label">SOCIAL</div>
+        <a class="side-link" id="nav-roblox" href="#roblox" data-nav="Roblox"><span class="nav-icon">R$</span><span>Roblox</span><i class="nav-dot"></i></a>
+      </section></div>
+  </aside>
+
+
+  <div class="scene" aria-hidden="true">
+    <video class="bgvideo" id="bgvideo" autoplay muted loop playsinline preload="none"></video>
+    <div class="scrim"></div>
+    <div class="video-glow"></div>
+    <div class="sky"></div>
+    <div class="sea"></div>
+    <div class="cloud c1"></div>
+    <div class="cloud c2"></div>
+    <div class="cloud c3"></div>
+    <div class="horizon"></div>
+    <div class="island"></div>
+    <div class="sun"></div>
+    <div class="glimmer"></div>
+    <div class="wave w1"></div>
+    <div class="wave w2"></div>
+    <div class="wave w3"></div>
+
+    <!-- palm silhouette -->
+    <svg class="palm" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+      <g fill="#0A2B22">
+        <!-- trunk -->
+        <path d="M138 420 C130 336 128 258 148 192 L164 196 C148 262 150 340 166 420 Z"/>
+        <!-- fronds -->
+        <g>
+          <path transform="rotate(8 152 192)"    d="M152 192 C202 158 262 156 294 186 C252 170 202 176 154 204 Z"/>
+          <path transform="rotate(-20 152 192)"  d="M152 192 C202 158 262 156 294 186 C252 170 202 176 154 204 Z"/>
+          <path transform="rotate(-50 152 192)"  d="M152 192 C202 158 262 156 294 186 C252 170 202 176 154 204 Z"/>
+          <path transform="rotate(-82 152 192)"  d="M152 192 C202 158 262 156 294 186 C252 170 202 176 154 204 Z"/>
+          <path transform="rotate(-114 152 192)" d="M152 192 C202 158 262 156 294 186 C252 170 202 176 154 204 Z"/>
+          <path transform="rotate(-146 152 192)" d="M152 192 C202 158 262 156 294 186 C252 170 202 176 154 204 Z"/>
+          <path transform="rotate(-175 152 192)" d="M152 192 C202 158 262 156 294 186 C252 170 202 176 154 204 Z"/>
+          <path transform="rotate(36 152 192)"   d="M152 192 C198 166 244 168 272 194 C234 184 196 188 154 204 Z"/>
+        </g>
+        <!-- coconuts -->
+        <circle cx="144" cy="200" r="9"/>
+        <circle cx="162" cy="204" r="8"/>
+      </g>
+    </svg>
+
+    <div id="sparks"></div>
+    <div class="rain" id="rain"></div>
+    <div class="vignette"></div>
+    <div class="grain"></div>
+  </div>
+
+  
+
+  <label class="language-switcher" aria-label="Language"><select id="languageSelect"><option value="en">🇺🇸 English</option><option value="ru">🇷🇺 Русский</option><option value="uk">🇺🇦 Українська</option></select></label>
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="mobile-drawer" id="mobileDrawer" aria-label="Mobile values menu" aria-hidden="true">
+    <div class="drawer-head"><strong>Ro<span>VALUES</span> Menu</strong><button class="drawer-close" id="drawerClose" type="button" aria-label="Close menu">×</button></div>
+    <div class="drawer-content">
+      <section class="nav-group wide">
+        <div class="nav-label">MAIN PAGES</div>
+        <a class="side-link active" href="#home" data-nav="Home"><span class="nav-icon">H</span><span>Home</span><i class="nav-dot"></i></a>
+        <a class="side-link" href="#trading" data-nav="Trading Servers"><span class="nav-icon">TS</span><span>Trading Servers</span></a>
+        <a class="side-link" href="#trade" data-nav="MM2 Trading"><span class="nav-icon">↔</span><span>MM2 Trading</span></a>
+      </section>
+      <section class="nav-group wide">
+        <div class="nav-label">GAME</div>
+        <a class="side-link" href="#mm2" data-nav="Murder Mystery 2"><span class="nav-icon">M2</span><span>Murder Mystery 2</span><i class="nav-dot"></i></a>
+      </section>
+      <section class="nav-group">
+        <div class="nav-label">CATEGORIES</div>
+        <a class="side-link" href="#sets" data-nav="Sets"><span class="nav-icon">S</span><span>Sets</span></a>
+        <a class="side-link" href="#uniques" data-nav="Uniques"><span class="nav-icon">U</span><span>Uniques</span></a>
+        <a class="side-link" href="#evos" data-nav="Evos"><span class="nav-icon">E</span><span>Evos</span></a>
+        <a class="side-link" href="#ancients" data-nav="Ancients"><span class="nav-icon">A</span><span>Ancients</span></a>
+        <a class="side-link" href="#vintages" data-nav="Vintages"><span class="nav-icon">V</span><span>Vintages</span></a>
+        <a class="side-link" href="#chromas" data-nav="Chromas"><span class="nav-icon">C</span><span>Chromas</span></a>
+        <a class="side-link" href="#godlies" data-nav="Godlies"><span class="nav-icon">G</span><span>Godlies</span><i class="nav-dot"></i></a>
+      </section>
+      <section class="nav-group">
+        <div class="nav-label">RARITIES</div>
+        <a class="side-link" href="#legendaries" data-nav="Legendaries"><span class="nav-icon">L</span><span>Legendaries</span></a>
+        <a class="side-link" href="#rares" data-nav="Rares"><span class="nav-icon">R</span><span>Rares</span></a>
+        <a class="side-link" href="#uncommons" data-nav="Uncommons"><span class="nav-icon">UC</span><span>Uncommons</span></a>
+        <a class="side-link" href="#commons" data-nav="Commons"><span class="nav-icon">C</span><span>Commons</span></a>
+        <a class="side-link" href="#pets" data-nav="Pets"><span class="nav-icon">P</span><span>Pets</span></a>
+        <a class="side-link" href="#misc" data-nav="Misc. Items"><span class="nav-icon">+</span><span>Misc. Items</span></a>
+        <a class="side-link" href="#untradables" data-nav="Untradables"><span class="nav-icon">×</span><span>Untradables</span></a>
+      </section>
+      <section class="nav-group">
+        <div class="nav-label">SOCIAL</div>
+        <a class="side-link" id="nav-roblox" href="#roblox" data-nav="Roblox"><span class="nav-icon">R$</span><span>Roblox</span><i class="nav-dot"></i></a>
+      </section></div>
+  </aside>
+  <nav class="mobile-bottom" aria-label="Quick navigation">
+    <a class="bottom-btn active" href="#home" data-nav="Home"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></a>
+    <a class="bottom-btn" href="#sets" data-nav="Sets"><svg viewBox="0 0 24 24"><path d="m12 2 3 6 7 .9-5 4.8 1.3 7-6.3-3.3-6.3 3.3 1.3-7-5-4.8L9 8z"/></svg><span>Values</span></a>
+    <a class="bottom-btn" href="#trade" data-nav="MM2 Trading"><svg viewBox="0 0 24 24"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg><span>Trade</span></a>
+    <a class="bottom-btn" id="bottomRoblox" href="#roblox" data-nav="Roblox"><svg viewBox="0 0 24 24"><path d="m6 3 15 3-3 15-15-3zM10 10l4 1-1 4-4-1z"/></svg><span>Roblox</span></a>
+    <button class="bottom-btn" id="menuToggle" type="button" aria-controls="mobileDrawer" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>Menu</span></button>
+  </nav>
+  <div class="nav-toast" id="navToast" role="status" aria-live="polite"></div>
+
+  <main class="wrap">
+    <section class="home-view" id="homeView">
+      <div class="hero-kicker"><span class="hero-kicker-dot"></span><span data-join-i18n="heroKicker">KOREAN TRADING HUB • LIVE ACCESS</span></div>
+      <h1>Ro<span class="grad">VALUES</span></h1>
+      <p class="tagline" data-join-i18n="tagline">Trusted MM2 values, fast access, and a clear route into the Korean trading server.</p>
+
+      <div class="live-strip"><span class="pulse-dot"></span><span data-join-i18n="liveStrip">SERVER ROUTE READY</span> <b>•</b> 🇰🇷 MM2 KOREA</div>
+
+      <div class="badges">
+        <span class="badge">📊 <span data-join-i18n="badgeValues">Updated values</span></span>
+        <span class="badge">🌐 <span data-join-i18n="badgeLanguages">3 languages</span></span>
+        <span class="badge">🛡️ <span data-join-i18n="badgeAccess">Safer access help</span></span>
+      </div>
+
+      <div class="join-shell">
+        <div class="join-panel">
+          <div class="join-status"><span><i></i><span data-join-i18n="accessStatus">Access route online</span></span><span>ROBLOX • MM2</span></div>
+          <a class="card korean join-card" id="link-korean" href="#" target="_blank" rel="noopener" aria-label="Join Korean Server">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M5.164 0 .16 18.928 18.836 24l5.005-18.929L5.164 0Zm8.747 15.354-5.393-1.418 1.418-5.363 5.393 1.418-1.418 5.363Z"/></svg>
+            </span>
+            <span class="meta">
+              <span class="eyebrow" data-join-i18n="joinEyebrow">MM2 • KOREAN TRADING SERVER</span>
+              <span class="name" data-join-i18n="joinTitle">Join the Korean MM2 server</span>
+              <span class="desc" data-join-i18n="joinDesc">Open Roblox and enter the private trading server.</span>
+            </span>
+            <span class="join-pill"><span data-join-i18n="joinCta">JOIN SERVER</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </a>
+          <div class="join-actions">
+            <button class="join-help" id="joinHelpBtn" type="button" aria-haspopup="dialog" aria-controls="joinHelpModal">
+              <span class="join-help-icon">?</span>
+              <span class="join-help-copy"><strong data-join-i18n="helpButton">Problems joining?</strong><small data-join-i18n="helpButtonSub">Cross-device, passkey or verification loop</small></span>
+              <span class="join-help-arrow">›</span>
+            </button>
+            <div class="trust-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="m9 12 2 2 4-5"/></svg><span data-join-i18n="officialFlow">Official Roblox flow</span></div>
+          </div>
+          <p class="join-safety"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v5c0 5 3.4 8.2 8 10 4.6-1.8 8-5 8-10V6z"/><path d="M12 8v5M12 16h.01"/></svg><span data-join-i18n="safetyLine">Having trouble logging in? Message me on Telegram: @divauom.</span></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="catalog-view" id="catalogView" aria-live="polite">
+      <header class="catalog-hero">
+        <div class="catalog-kicker" data-i18n="kicker">MM2 VALUES • COMMUNITY DATABASE</div>
+        <h2 class="catalog-title" id="catalogTitle">Murder Mystery 2 Set Values</h2>
+        <p class="catalog-desc" id="catalogDesc">Updated set values with demand, rarity, stability and value ranges.</p>
+        <div class="catalog-meta"><span>⚡ Local item images</span><span data-i18n="notSeers">Items are not valued in Seers</span><span data-i18n="updated">Snapshot: July 9, 2026</span><span id="datasetCount">0 sets</span></div>
+      <a class="catalog-join" id="catalogJoin" href="#">🇰🇷 Join Korean Server <span>↗</span></a>
+      </header>
+      <div class="catalog-controls">
+        <input class="control search" id="itemSearch" type="search" placeholder="Search items or contents…" autocomplete="off">
+        <select class="control" id="stabilityFilter"><option value="">All stability</option><option>Stable</option><option>Doing Well</option><option>Fluctuating</option><option>Underpaid For</option></select>
+        <select class="control" id="sortItems"><option value="value-desc">Value: high to low</option><option value="value-asc">Value: low to high</option><option value="demand-desc">Demand: high to low</option><option value="rarity-desc">Rarity: high to low</option></select>
+        <button class="clear-btn" id="clearFilters" type="button">Clear</button>
+      </div>
+      <div class="tier-tabs" id="tierTabs"></div>
+      <div class="result-line"><span id="resultCount"></span><span id="activeSnapshot">Independent interface • user-provided data</span></div>
+      <div class="items-grid" id="itemsGrid"></div>
+      <p class="catalog-note" data-i18n="rounding">Some sets may use rounded values and may not equal the exact sum of every included item.</p>
+    </section>
+    <footer>© <span id="year"></span> RoVALUES · MM2 Korea</footer>
+  </main>
+
+    <div class="join-modal" id="joinHelpModal" role="dialog" aria-modal="true" aria-labelledby="joinHelpTitle" aria-hidden="true">
+      <div class="join-modal-backdrop" data-modal-close></div>
+      <section class="join-modal-dialog" tabindex="-1">
+        <header class="join-modal-head">
+          <div><div class="join-modal-kicker" data-join-i18n="modalKicker">ROBLOX SIGN-IN GUIDE</div><h2 class="join-modal-title" id="joinHelpTitle" data-join-i18n="modalTitle">Fix sign-in without sharing your account</h2></div>
+          <button class="join-modal-close" type="button" data-modal-close aria-label="Close">×</button>
+        </header>
+        <div class="join-modal-body">
+          <p class="join-modal-intro" data-join-i18n="modalIntro">Choose the issue you see.</p>
+          <div class="guide-tabs" role="tablist">
+            <button class="guide-tab active" type="button" role="tab" data-guide="cross" data-join-i18n="tabCross">Use another device</button>
+            <button class="guide-tab" type="button" role="tab" data-guide="passkey" data-join-i18n="tabPasskey">Passkey problem</button>
+            <button class="guide-tab" type="button" role="tab" data-guide="stuck" data-join-i18n="tabStuck">Still stuck</button>
+          </div>
+          <div class="guide-panel" id="guidePanel"></div>
+          <div class="security-callout"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v5c0 5 3.4 8.2 8 10 4.6-1.8 8-5 8-10V6z"/><path d="M9 12l2 2 4-5"/></svg><span data-join-i18n="securityCallout">Any problems? Write to me on Telegram: @divauom.</span></div>
+        </div>
+      </section>
+    </div>
+
+<script>
+  /* ============================================================
+     >>> ВСТАВЬ СВОИ ССЫЛКИ СЮДА <<<
+     Просто замени текст в кавычках на свои ссылки.
+     ============================================================ */
+  const LINKS = {
+    korean: "https://www.roblox.com.mu/games/142823291/Murder-Mystery-2?privateServerLinkCode=81846629875528622323206885055003"
+  };
+
+  /* ------------------------------------------------------------
+     ВИДЕОФОН
+     - video: прямая ссылка на .mp4 ИЛИ имя файла рядом с сайтом
+       (например "beach.mp4"). Пустая строка "" = рисованная сцена.
+     - rain: true = дождь поверх фона, false = без дождя.
+     Если видео не загрузилось — автоматически включится
+     рисованная сцена, сайт не с  омается.
+     ------------------------------------------------------------ */
+  const BACKGROUND = {
+    // Пустое значение = максимально быстрая загрузка каталога.
+    // Для локального видеофона позже можно указать: video: "1.mp4"
+    video: "1.mp4",
+    rain: true,
+  };
+  /* ============================================================ */
+
+  for (const [key, url] of Object.entries(LINKS)) {
+    const el = document.getElementById("link-" + key);
+    if (el && url && !url.startsWith("ВСТАВЬ")) el.href = url;
+    else if (el) el.addEventListener("click", event => { event.preventDefault(); document.getElementById("joinHelpBtn")?.click(); });
+  }
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+  const catalogJoin=document.getElementById("catalogJoin"); if(catalogJoin&&LINKS.korean&&!LINKS.korean.startsWith("ВСТАВЬ")){catalogJoin.href=LINKS.korean;catalogJoin.target="_blank";catalogJoin.rel="noopener";}
+
+  // Video starts as soon as the FIRST frame arrives (loadeddata), not after
+  // the full 21 MB is buffered. This is essential for Cloudflare/mobile.
+  if (BACKGROUND.video) {
+    const v = document.getElementById("bgvideo");
+    const revealVideo = () => {
+      if (v.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
+      document.body.classList.add("has-video");
+      v.play().catch(() => {});
+    };
+    const keepScene = () => document.body.classList.remove("has-video");
+    v.muted = true;
+    v.defaultMuted = true;
+    v.playsInline = true;
+    v.addEventListener("loadeddata", revealVideo, { once: true });
+    v.addEventListener("canplay", revealVideo, { once: true });
+    v.addEventListener("playing", revealVideo, { once: true });
+    v.addEventListener("error", keepScene);
+    v.src = BACKGROUND.video;
+    v.load();
+  }
+
+  // early stars in the sunset sky (part of the drawn scene)
+  {
+    const sky = document.querySelector(".sky");
+    for (let i = 0; i < 16; i++) {
+      const s = document.createElement("div");
+      s.className = "star";
+      const size = 1.5 + Math.random() * 1.8;
+      s.style.width = s.style.height = size + "px";
+      s.style.left = Math.random() * 100 + "%";
+      s.style.top = Math.random() * 42 + "%";
+      s.style.animationDuration = 2 + Math.random() * 3 + "s";
+      s.style.animationDelay = -Math.random() * 4 + "s";
+      sky.appendChild(s);
+    }
+  }
+
+  // warm floating sparks
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // rain overlay
+  if (BACKGROUND.rain && !reduced) {
+    document.body.classList.add("has-rain");
+    const rain = document.getElementById("rain");
+    for (let i = 0; i < 70; i++) {
+      const d = document.createElement("div");
+      d.className = "drop";
+      d.style.left = Math.random() * 100 + "%";
+      d.style.height = 55 + Math.random() * 65 + "px";
+      d.style.animationDuration = 0.55 + Math.random() * 0.5 + "s";
+      d.style.animationDelay = -Math.random() * 2 + "s";
+      d.style.opacity = 0.35 + Math.random() * 0.45;
+      rain.appendChild(d);
+    }
+  }
+  if (!reduced) {
+    const holder = document.getElementById("sparks");
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement("div");
+      p.className = "spark";
+      const size = 2 + Math.random() * 3;
+      p.style.width = p.style.height = size + "px";
+      p.style.left = Math.random() * 100 + "vw";
+      p.style.animationDuration = 14 + Math.random() * 20 + "s";
+      p.style.animationDelay = -Math.random() * 30 + "s";
+      p.style.opacity = 0.2 + Math.random() * 0.5;
+      holder.appendChild(p);
+    }
+  }
+
+
+
+  const SET_ITEMS = [{"name":"Chroma Ever Set","contains":"Chroma Evergreen, Chroma Evergun","value":134000,"range":"133K – 134K","stability":"Underpaid For","demand":8,"rarity":8,"change":-1000,"tier":"Chroma"},{"name":"Chroma Alien Set","contains":"Chroma Alienbeam, Chroma Raygun","value":38000,"range":"N/A","stability":"Stable","demand":6,"rarity":6,"change":-250,"tier":"Chroma"},{"name":"Chroma Bauble Set","contains":"Chroma Bauble, Chroma Ornament","value":35800,"range":"N/A","stability":"Stable","demand":7,"rarity":6,"change":-1000,"tier":"Chroma"},{"name":"Chroma Sun Set","contains":"Chroma Sunrise, Chroma Sunset","value":19000,"range":"N/A","stability":"Stable","demand":6,"rarity":5,"change":500,"tier":"Chroma"},{"name":"Chroma Snow Set","contains":"Chroma Snowcannon, Chroma Snow Dagger","value":13000,"range":"N/A","stability":"Stable","demand":6,"rarity":5,"change":-250,"tier":"Chroma"},{"name":"Chroma Blizzard Set","contains":"Chroma Blizzard, Chroma Snowstorm","value":12250,"range":"N/A","stability":"Stable","demand":5,"rarity":5,"change":-250,"tier":"Chroma"},{"name":"Chroma Sweet Set","contains":"Chroma Sweet, Chroma Treat","value":4900,"range":"4,700 – 5,100","stability":"Fluctuating","demand":5,"rarity":4,"change":-100,"tier":"Chroma"},{"name":"Chroma Bringer Set","contains":"Chroma Darkbringer, Chroma Lightbringer","value":125,"range":"N/A","stability":"Stable","demand":1,"rarity":2,"change":-10,"tier":"Chroma"},{"name":"Chroma Slasher Set","contains":"Chroma Laser, Chroma Slasher","value":75,"range":"N/A","stability":"Stable","demand":1,"rarity":2,"change":-5,"tier":"Chroma"},{"name":"Chroma Pet Set","contains":"All Chroma Pets","value":28,"range":"14 – 28","stability":"Underpaid For","demand":1,"rarity":2,"change":-7,"tier":"Chroma"},{"name":"Traveler's Set","contains":"Traveler's Axe, Traveler's Gun","value":13150,"range":"N/A","stability":"Stable","demand":6,"rarity":5,"change":-250,"tier":"Small"},{"name":"Ever Set","contains":"Evergreen, Evergun","value":5950,"range":"N/A","stability":"Stable","demand":5,"rarity":4,"change":-50,"tier":"Small"},{"name":"Celestial Set","contains":"Celestial, Constellation","value":4725,"range":"N/A","stability":"Stable","demand":5,"rarity":4,"change":75,"tier":"Small"},{"name":"Alien Set","contains":"Alienbeam, Raygun","value":3375,"range":"N/A","stability":"Stable","demand":6,"rarity":4,"change":25,"tier":"Small"},{"name":"Dark Set","contains":"Darkshot, Darksword","value":3175,"range":"3,175 – 3,205","stability":"Doing Well","demand":6,"rarity":4,"change":50,"tier":"Small"},{"name":"Vampire's Set","contains":"Vampire's Axe, Vampire's Gun","value":2925,"range":"N/A","stability":"Stable","demand":5,"rarity":4,"change":25,"tier":"Small"},{"name":"Sakura Set","contains":"Blossom, Sakura","value":2520,"range":"N/A","stability":"Stable","demand":6,"rarity":4,"change":20,"tier":"Small"},{"name":"Sun Set","contains":"Sunrise, Sunset","value":1600,"range":"1,600 – 1,650","stability":"Doing Well","demand":6,"rarity":4,"change":35,"tier":"Small"},{"name":"Snow Set","contains":"Snowcannon, Snow Dagger","value":1085,"range":"N/A","stability":"Stable","demand":5,"rarity":3,"change":5,"tier":"Small"},{"name":"Soul Set","contains":"Soul, Spirit","value":1050,"range":"N/A","stability":"Stable","demand":5,"rarity":3,"change":10,"tier":"Small"},{"name":"Bauble Set","contains":"Bauble, Ornament","value":927,"range":"925 – 928","stability":"Fluctuating","demand":5,"rarity":4,"change":-1,"tier":"Small"},{"name":"Rainbow Set","contains":"Rainbow Gun, Rainbow","value":830,"range":"N/A","stability":"Stable","demand":5,"rarity":3,"change":10,"tier":"Small"},{"name":"Bloom Set","contains":"Bloom, Flora","value":810,"range":"N/A","stability":"Stable","demand":5,"rarity":3,"change":20,"tier":"Small"},{"name":"Ocean Set","contains":"Ocean, Waves","value":555,"range":"N/A","stability":"Stable","demand":4,"rarity":3,"change":-10,"tier":"Small"},{"name":"Xeno Set","contains":"Xenoknife, Xenoshot","value":540,"range":"N/A","stability":"Stable","demand":4,"rarity":3,"change":-10,"tier":"Small"},{"name":"Corrupt Set","contains":"Corrupt, Luger","value":520,"range":"N/A","stability":"Stable","demand":4,"rarity":3,"change":-10,"tier":"Small"},{"name":"Flowerwood Set","contains":"Flowerwood, Flowerwood Gun","value":515,"range":"N/A","stability":"Stable","demand":4,"rarity":3,"change":-10,"tier":"Small"},{"name":"Blizzard Set","contains":"Blizzard, Snowstorm","value":500,"range":"N/A","stability":"Stable","demand":4,"rarity":3,"change":30,"tier":"Small"},{"name":"Bow Set","contains":"Harvester, Icepiercer","value":410,"range":"N/A","stability":"Stable","demand":3,"rarity":2,"change":-20,"tier":"Small"},{"name":"Sweet Set","contains":"Sweet, Treat","value":345,"range":"N/A","stability":"Stable","demand":3,"rarity":3,"change":20,"tier":"Small"},{"name":"Borealis Set","contains":"Australis, Borealis","value":305,"range":"N/A","stability":"Stable","demand":3,"rarity":3,"change":-10,"tier":"Small"},{"name":"Full Ice Set","contains":"Icebreaker, Iceblaster, Icepiercer","value":263,"range":"N/A","stability":"Stable","demand":3,"rarity":2,"change":-3,"tier":"Small"},{"name":"Pearl Set","contains":"Pearl, Pearlshine","value":195,"range":"N/A","stability":"Stable","demand":2,"rarity":3,"change":10,"tier":"Small"},{"name":"Bat Set","contains":"Bat, Makeshift","value":155,"range":"N/A","stability":"Stable","demand":2,"rarity":2,"change":-3,"tier":"Small"},{"name":"Candy Set","contains":"Candy, Sugar","value":115,"range":"N/A","stability":"Stable","demand":1,"rarity":2,"change":-2,"tier":"Small"},{"name":"Full Elderwood Set","contains":"Elderwood Blade, Revolver, Scythe","value":110,"range":"N/A","stability":"Stable","demand":1,"rarity":2,"change":-8,"tier":"Small"},{"name":"Ice Set","contains":"Icebreaker, Iceblaster","value":103,"range":"N/A","stability":"Stable","demand":1,"rarity":2,"change":-3,"tier":"Small"},{"name":"Full Swirly Set","contains":"Swirly Axe, Swirly Gun, Swirly Blade","value":77,"range":"N/A","stability":"Stable","demand":1,"rarity":2,"change":-3,"tier":"Small"},{"name":"Elderwood Set","contains":"Elderwood Revolver, Elderwood Scythe","value":75,"range":"N/A","stability":"Stable","demand":1,"rarity":2,"change":-5,"tier":"Small"},{"name":"Spectre Set","contains":"Phantom, Spectre","value":74,"range":"N/A","stability":"Stable","demand":1,"rarity":2,"change":-2,"tier":"Small"},{"name":"Bringer Set","contains":"Darkbringer, Lightbringer","value":70,"range":"N/A","stability":"Stable","demand":1,"rarity":2,"change":-3,"tier":"Small"},{"name":"Pumpkin Set 2018","contains":"Blue, Green, Purple, Red Pumpkin","value":405,"range":"403 – 405","stability":"Underpaid For","demand":3,"rarity":4,"change":-2,"tier":"Collectible"},{"name":"Latte Set","contains":"Latte Gun, Latte Knife","value":360,"range":"N/A","stability":"Stable","demand":3,"rarity":3,"change":-20,"tier":"Collectible"},{"name":"Bats Set","contains":"Bats Gun, Bats Knife","value":166,"range":"N/A","stability":"Stable","demand":3,"rarity":5,"change":5,"tier":"Collectible"},{"name":"Zombified Set","contains":"Zombified Gun, Zombified Knife","value":110,"range":"N/A","stability":"Stable","demand":3,"rarity":4,"change":10,"tier":"Collectible"},{"name":"Spectral Set","contains":"Spectral Gun, Spectral Knife","value":83,"range":"N/A","stability":"Stable","demand":3,"rarity":4,"change":-5,"tier":"Collectible"},{"name":"Full Bringer Set","contains":"Chroma Bringer Set + Bringer Set","value":195,"range":"N/A","stability":"Stable","demand":1,"rarity":2,"change":-13,"tier":"Bulk"},{"name":"Full Luger Set","contains":"Luger Set + Chroma Luger","value":192,"range":"N/A","stability":"Stable","demand":1,"rarity":2,"change":-4,"tier":"Bulk"},{"name":"Luger Set","contains":"All non-Chroma Lugers","value":142,"range":"N/A","stability":"Stable","demand":1,"rarity":2,"change":-2,"tier":"Bulk"},{"name":"Sparkle Set","contains":"Sparkles 1–10","value":127,"range":"N/A","stability":"Stable","demand":2,"rarity":3,"change":2,"tier":"Bulk"},{"name":"Small Set 107","contains":"Small Set 103 + Plasma + Iceflake","value":1370,"range":"N/A","stability":"Fluctuating","demand":4,"rarity":4,"change":-65,"tier":"Dynamic"},{"name":"Small Set 103","contains":"Pre-Hallows 2021 Godly, Ancient, Vintage","value":1335,"range":"N/A","stability":"Fluctuating","demand":4,"rarity":4,"change":-30,"tier":"Dynamic"},{"name":"Full Chroma Set","contains":"Every pre-2021 Chroma pet and weapon","value":580,"range":"N/A","stability":"Underpaid For","demand":1,"rarity":2,"change":-35,"tier":"Dynamic"},{"name":"Chroma Weapon Set","contains":"Every pre-2021 Chroma weapon","value":550,"range":"N/A","stability":"Stable","demand":1,"rarity":2,"change":-30,"tier":"Dynamic"}];
+  const UNIQUE_ITEMS = [{"name":"Corrupt","tier":"Victim","value":475,"range":"N/A","stability":"Stable","demand":4,"rarity":3,"origin":"Data Loss","change":-10},{"name":"slouse's Clown (Gun)","tier":"Special","owner":"slouse","demand":11,"rarity":11,"origin":"Gift From Nikilis"},{"name":"slouse's Clown (Knife)","tier":"Special","owner":"slouse","demand":11,"rarity":11,"origin":"Gift From Nikilis"},{"name":"Sharkseeker","tier":"Special","rarity":6,"origin":"Nerf × Roblox Promo"},{"name":"Dartbringer","tier":"Special","rarity":7,"origin":"Nerf × Roblox Promo"}];
+  const EVO_ITEMS = [{"name":"Synthwave (Var. 1)","family":"Synthwave","class":"Rare","rarity":4,"origin":"Summer 2025 Evo Pack","exp":"Base"},{"name":"Synthwave (Var. 2)","family":"Synthwave","class":"Legendary","rarity":4,"origin":"Summer 2025 Evo Pack","exp":"36K"},{"name":"Synthwave (Var. 3)","family":"Synthwave","class":"Godly","rarity":5,"origin":"Summer 2025 Evo Pack","exp":"216K"},{"name":"Synthwave (Var. 4)","family":"Synthwave","class":"Ancient","rarity":6,"origin":"Summer 2025 Evo Pack","exp":"864K"},{"name":"Gingerscythe (Var. 1)","family":"Gingerscythe","class":"Rare","rarity":3,"origin":"Xmas 2023 Evo Pack","exp":"Base"},{"name":"Gingerscythe (Var. 2)","family":"Gingerscythe","class":"Legendary","rarity":3,"origin":"Xmas 2023 Evo Pack","exp":"36K"},{"name":"Gingerscythe (Var. 3)","family":"Gingerscythe","class":"Godly","rarity":4,"origin":"Xmas 2023 Evo Pack","exp":"216K"},{"name":"Gingerscythe (Var. 4)","family":"Gingerscythe","class":"Ancient","rarity":6,"origin":"Xmas 2023 Evo Pack","exp":"864K"},{"name":"Icecrusher (Var. 1)","family":"Icecrusher","class":"Rare","rarity":3,"origin":"Xmas 2022 Evo Pack","exp":"Base"},{"name":"Icecrusher (Var. 2)","family":"Icecrusher","class":"Legendary","rarity":3,"origin":"Xmas 2022 Evo Pack","exp":"36K"},{"name":"Icecrusher (Var. 3)","family":"Icecrusher","class":"Godly","rarity":4,"origin":"Xmas 2022 Evo Pack","exp":"216K"},{"name":"Icecrusher (Var. 4)","family":"Icecrusher","class":"Ancient","rarity":6,"origin":"Xmas 2022 Evo Pack","exp":"864K"},{"name":"Reaver (Var. 1)","family":"Reaver","class":"Rare","rarity":4,"origin":"Hallows 2021 Evo Pack","exp":"Base"},{"name":"Reaver (Var. 2)","family":"Reaver","class":"Legendary","rarity":4,"origin":"Hallows 2021 Evo Pack","exp":"36K"},{"name":"Reaver (Var. 3)","family":"Reaver","class":"Godly","rarity":5,"origin":"Hallows 2021 Evo Pack","exp":"216K"},{"name":"Reaver (Var. 4)","family":"Reaver","class":"Ancient","rarity":6,"origin":"Hallows 2021 Evo Pack","exp":"864K"}];
+
+  const MORE_CATALOGS = {"ancients":[{"name":"Nik's Scythe","tier":"Special","stability":"Overpaid For","origin":"Gift From Nikilis","demand":11,"rarity":11,"valueText":"Priceless","range":"N/A"},{"name":"Gingerscope","tier":"Tier 2","stability":"Stable","origin":"Xmas 2023 (Tier 20)","demand":6,"rarity":4,"value":17750,"change":250,"range":"N/A"},{"name":"Traveler's Axe","tier":"Tier 2","stability":"Stable","origin":"Hallows 2023 (Tier 30)","demand":6,"rarity":5,"value":8400,"change":50,"range":"N/A"},{"name":"Celestial","tier":"Tier 2","stability":"Stable","origin":"Xmas 2024 (Tier 20)","demand":5,"rarity":4,"value":2000,"change":50,"range":"N/A"},{"name":"Vampire's Axe","tier":"Tier 2","stability":"Stable","origin":"Hallows 2024 (Tier 20)","demand":5,"rarity":4,"value":1225,"change":25,"range":"N/A"},{"name":"Harvester","tier":"Tier 2","stability":"Stable","origin":"Hallows 2021 (Tier 30)","demand":3,"rarity":2,"value":250,"change":-10,"range":"N/A"},{"name":"Icepiercer","tier":"Tier 2","stability":"Stable","origin":"Xmas 2022 (Tier 20)","demand":3,"rarity":2,"value":160,"change":-10,"range":"N/A"},{"name":"Icebreaker","tier":"Tier 1","stability":"Stable","origin":"Xmas 2020 (Tier 20)","demand":1,"rarity":2,"value":68,"change":-2,"range":"N/A"},{"name":"Batwing","tier":"Tier 1","stability":"Stable","origin":"Hallows 2018 Item Pack","demand":1,"rarity":2,"value":45,"change":-5,"range":"N/A"},{"name":"Swirly Axe","tier":"Tier 1","stability":"Stable","origin":"Xmas 2021 (Tier 20)","demand":1,"rarity":2,"value":42,"change":-3,"range":"N/A"},{"name":"Elderwood Scythe","tier":"Tier 1","stability":"Stable","origin":"Hallows 2019 (Tier 40)","demand":1,"rarity":2,"value":40,"change":-2,"range":"N/A"},{"name":"Hallowscythe","tier":"Tier 1","stability":"Stable","origin":"Hallows 2020 (Tier 30)","demand":1,"rarity":2,"value":32,"change":-3,"range":"N/A"},{"name":"Logchopper","tier":"Tier 1","stability":"Stable","origin":"Xmas 2019 (Tier 30)","demand":1,"rarity":2,"value":18,"change":-2,"range":"N/A"},{"name":"Icewing","tier":"Tier 1","stability":"Stable","origin":"Xmas 2018 Item Pack","demand":2,"rarity":2,"value":15,"change":2,"range":"N/A"}],"vintages":[{"name":"Ghost","tier":"Tier 2","stability":"Stable","origin":"MM1 (1,200 Coins)","demand":1,"rarity":2,"value":10,"change":0,"range":"N/A"},{"name":"Blood","tier":"Tier 2","stability":"Stable","origin":"MM1 (4,000 Coins)","demand":1,"rarity":2,"value":8,"change":0,"range":"N/A"},{"name":"Laser","tier":"Tier 2","stability":"Stable","origin":"MM1 (1,200 Coins)","demand":1,"rarity":2,"value":8,"change":0,"range":"N/A"},{"name":"America","tier":"Tier 2","stability":"Stable","origin":"MM1 July 4th (25 Cash)","demand":1,"rarity":2,"value":7,"change":0,"range":"N/A"},{"name":"Prince","tier":"Tier 1","stability":"Stable","origin":"MM1 (2,000 Coins)","demand":1,"rarity":2,"value":6,"change":0,"range":"N/A"},{"name":"Shadow","tier":"Tier 1","stability":"Stable","origin":"MM1 (3,000 Coins)","demand":1,"rarity":2,"value":6,"change":0,"range":"N/A"},{"name":"Phaser","tier":"Tier 1","stability":"Stable","origin":"MM1 (2,000 Coins)","demand":1,"rarity":2,"value":5,"change":0,"range":"N/A"},{"name":"Cowboy","tier":"Tier 1","stability":"Stable","origin":"MM1 (800 Coins)","demand":1,"rarity":2,"value":4,"change":-1,"range":"N/A"},{"name":"Golden","tier":"Tier 1","stability":"Stable","origin":"MM1 (3,500 Coins)","demand":1,"rarity":2,"value":4,"change":0,"range":"N/A"},{"name":"Splitter","tier":"Tier 1","stability":"Stable","origin":"MM1 (800 Coins)","demand":1,"rarity":2,"value":3,"change":0,"range":"N/A"}],"chromas":[{"name":"Chroma Traveler's Gun","tier":"Tier 3","stability":"Stable","origin":"Hallows 2023 (Unboxed)","demand":9,"rarity":10,"value":220000,"change":-5000,"range":"N/A"},{"name":"Chroma Evergun","tier":"Tier 3","stability":"Stable","origin":"Xmas 2023 (Gifting)","demand":8,"rarity":8,"value":76000,"change":-1000,"range":"N/A"},{"name":"Chroma Evergreen","tier":"Tier 3","stability":"Underpaid For","origin":"Xmas 2023 (Unboxed)","demand":7,"rarity":7,"value":58000,"change":-1000,"range":"57,000 – 58,000"},{"name":"Chroma Bauble","tier":"Tier 3","stability":"Stable","origin":"Xmas 2024 (Gifting)","demand":7,"rarity":6,"value":34000,"change":-1000,"range":"N/A"},{"name":"Chroma Vampire's Gun","tier":"Tier 3","stability":"Stable","origin":"Hallows 2024 (Unboxed)","demand":7,"rarity":6,"value":29000,"change":-1000,"range":"N/A"},{"name":"Chroma Constellation","tier":"Tier 3","stability":"Stable","origin":"Xmas 2024 (Unboxed)","demand":7,"rarity":6,"value":27000,"change":500,"range":"N/A"},{"name":"Chroma Alienbeam","tier":"Tier 3","stability":"Stable","origin":"Hallows 2025 (Unboxed)","demand":6,"rarity":6,"value":24000,"change":-1000,"range":"N/A"},{"name":"Chroma Raygun","tier":"Tier 2","stability":"Stable","origin":"Hallows 2025 (Tier 25)","demand":6,"rarity":5,"value":14000,"change":-250,"range":"N/A"},{"name":"Chroma Sunrise","tier":"Tier 2","stability":"Stable","origin":"Summer 2025 (Unboxed)","demand":6,"rarity":5,"value":12000,"change":250,"range":"N/A"},{"name":"Chroma Snowcannon","tier":"Tier 2","stability":"Stable","origin":"Xmas 2025 (Tier 30)","demand":6,"rarity":5,"value":8500,"change":250,"range":"N/A"},{"name":"Chroma Blizzard","tier":"Tier 2","stability":"Stable","origin":"Xmas 2025 Item Pack","demand":5,"rarity":5,"value":8000,"change":-500,"range":"N/A"},{"name":"Chroma Sunset","tier":"Tier 2","stability":"Stable","origin":"Summer 2025 (Tier 25)","demand":6,"rarity":5,"value":7000,"change":250,"range":"N/A"},{"name":"Chroma Heart Wand","tier":"Tier 2","stability":"Stable","origin":"Valentine 2026 (Unboxed)","demand":5,"rarity":4,"value":4750,"change":-250,"range":"N/A"},{"name":"Chroma Snow Dagger","tier":"Tier 2","stability":"Stable","origin":"Xmas 2025 (Unboxed)","demand":5,"rarity":5,"value":4500,"change":-250,"range":"N/A"},{"name":"Chroma Snowstorm","tier":"Tier 2","stability":"Stable","origin":"Xmas 2025 Item Pack","demand":5,"rarity":5,"value":4250,"change":-250,"range":"N/A"},{"name":"Chroma Watergun","tier":"Tier 2","stability":"Stable","origin":"Summer 2024 (Unboxed)","demand":5,"rarity":5,"value":3400,"change":-50,"range":"N/A"},{"name":"Chroma Treat","tier":"Tier 2","stability":"Fluctuating","origin":"Valentine 2026 Item Pack","demand":5,"rarity":4,"value":2600,"change":-100,"range":"2,500 – 2,700"},{"name":"Chroma Sweet","tier":"Tier 2","stability":"Fluctuating","origin":"Valentine 2026 Item Pack","demand":5,"rarity":4,"value":2300,"change":-100,"range":"2,200 – 2,400"},{"name":"Chroma Ornament","tier":"Tier 2","stability":"Stable","origin":"Xmas 2025 (Gifting)","demand":5,"rarity":4,"value":1800,"change":-100,"range":"N/A"},{"name":"Chroma Darkbringer","tier":"Tier 1","stability":"Stable","origin":"Mystery Crate #2","demand":1,"rarity":2,"value":65,"change":-5,"range":"N/A"},{"name":"Chroma Lightbringer","tier":"Tier 1","stability":"Stable","origin":"Mystery Crate #2","demand":1,"rarity":2,"value":60,"change":-5,"range":"N/A"},{"name":"Chroma Luger","tier":"Tier 1","stability":"Stable","origin":"Gun Box #1","demand":1,"rarity":2,"value":50,"change":-2,"range":"N/A"},{"name":"Chroma Candleflame","tier":"Tier 1","stability":"Stable","origin":"Hallows 2021 (Unboxed)","demand":1,"rarity":2,"value":42,"change":-3,"range":"N/A"},{"name":"Chroma Elderwood Blade","tier":"Tier 1","stability":"Stable","origin":"Hallows 2022 (Unboxed)","demand":1,"rarity":2,"value":40,"change":-2,"range":"N/A"},{"name":"Chroma Laser","tier":"Tier 1","stability":"Stable","origin":"Gun Box #3","demand":1,"rarity":2,"value":40,"change":-2,"range":"N/A"},{"name":"Chroma Swirly Gun","tier":"Tier 1","stability":"Stable","origin":"Xmas 2021 (Unboxed)","demand":1,"rarity":2,"value":40,"change":-2,"range":"N/A"},{"name":"Chroma Cookiecane","tier":"Tier 1","stability":"Stable","origin":"Xmas 2022 (Unboxed)","demand":1,"rarity":2,"value":35,"change":-3,"range":"N/A"},{"name":"Chroma Deathshard","tier":"Tier 1","stability":"Stable","origin":"Knife Box #1","demand":1,"rarity":2,"value":35,"change":-3,"range":"N/A"},{"name":"Chroma Slasher","tier":"Tier 1","stability":"Stable","origin":"Knife Box #4","demand":1,"rarity":2,"value":35,"change":-3,"range":"N/A"},{"name":"Chroma Fang","tier":"Tier 1","stability":"Stable","origin":"Knife Box #2","demand":1,"rarity":2,"value":32,"change":-3,"range":"N/A"},{"name":"Chroma Gemstone","tier":"Tier 1","stability":"Stable","origin":"Mystery Crate #1","demand":1,"rarity":2,"value":32,"change":-3,"range":"N/A"},{"name":"Chroma Shark","tier":"Tier 1","stability":"Stable","origin":"Gun Box #2","demand":1,"rarity":2,"value":32,"change":-3,"range":"N/A"},{"name":"Chroma Gingerblade","tier":"Tier 1","stability":"Stable","origin":"Xmas 2018 (Unboxed)","demand":1,"rarity":2,"value":30,"change":-2,"range":"N/A"},{"name":"Chroma Heat","tier":"Tier 1","stability":"Stable","origin":"Rainbow Box","demand":1,"rarity":2,"value":30,"change":-2,"range":"N/A"},{"name":"Chroma Seer","tier":"Tier 1","stability":"Stable","origin":"Season 1 Crafting","demand":1,"rarity":2,"value":30,"change":-2,"range":"N/A"},{"name":"Chroma Tides","tier":"Tier 1","stability":"Stable","origin":"Knife Box #5","demand":1,"rarity":2,"value":28,"change":-2,"range":"N/A"},{"name":"Chroma Saw","tier":"Tier 1","stability":"Stable","origin":"Knife Box #3","demand":1,"rarity":2,"value":27,"change":-3,"range":"N/A"},{"name":"Chroma Boneblade","tier":"Tier 1","stability":"Stable","origin":"Hallows 2018 (Unboxed)","demand":1,"rarity":2,"value":22,"change":-3,"range":"N/A"},{"name":"Chroma Fire Bat","tier":"Pets","stability":"Underpaid For","origin":"Season 1 Pet Egg","demand":1,"rarity":2,"value":4,"change":-1,"range":"2     4"},{"name":"Chroma Fire Bear","tier":"Pets","stability":"Underpaid For","origin":"Season 1 Pet Egg","demand":1,"rarity":2,"value":4,"change":-1,"range":"2 – 4"},{"name":"Chroma Fire Bunny","tier":"Pets","stability":"Underpaid For","origin":"Season 1 Pet Egg","demand":1,"rarity":2,"value":4,"change":-1,"range":"2 – 4"},{"name":"Chroma Fire Cat","tier":"Pets","stability":"Underpaid For","origin":"Season 1 Pet Egg","demand":1,"rarity":2,"value":4,"change":-1,"range":"2 – 4"},{"name":"Chroma Fire Dog","tier":"Pets","stability":"Underpaid For","origin":"Season 1 Pet Egg","demand":1,"rarity":2,"value":4,"change":-1,"range":"2 – 4"},{"name":"Chroma Fire Fox","tier":"Pets","stability":"Underpaid For","origin":"Season 1 Pet Egg","demand":1,"rarity":2,"value":4,"change":-1,"range":"2 – 4"},{"name":"Chroma Fire Pig","tier":"Pets","stability":"Underpaid For","origin":"Season 1 Pet Egg","demand":1,"rarity":2,"value":4,"change":-1,"range":"2 – 4"}],"godlies":[{"name":"Traveler's Gun","tier":"Tier 3","stability":"Stable","origin":"Hallows 2023 (Unboxed)","demand":5,"rarity":5,"value":4750,"change":-250,"range":"N/A"},{"name":"Evergun","tier":"Tier 3","stability":"Stable","origin":"Xmas 2023 (Gifting)","demand":5,"rarity":4,"value":3450,"change":-25,"range":"N/A"},{"name":"Constellation","tier":"Tier 3","stability":"Stable","origin":"Xmas 2024 (Unboxed)","demand":5,"rarity":4,"value":2725,"change":25,"range":"N/A"},{"name":"Evergreen","tier":"Tier 3","stability":"Stable","origin":"Xmas 2023 (Unboxed)","demand":5,"rarity":4,"value":2500,"change":-25,"range":"N/A"},{"name":"Turkey","tier":"Tier 3","stability":"Stable","origin":"Thanksgiving 2023 Pack","demand":5,"rarity":4,"value":2450,"change":-25,"range":"N/A"},{"name":"Alienbeam","tier":"Tier 3","stability":"Stable","origin":"Hallows 2025 (Unboxed)","demand":5,"rarity":4,"value":2000,"change":-50,"range":"N/A"},{"name":"Vampire's Gun","tier":"Tier 3","stability":"Stable","origin":"Hallows 2024 (Unboxed)","demand":5,"rarity":4,"value":1700,"change":-25,"range":"N/A"},{"name":"Darkshot","tier":"Tier 3","stability":"Doing Well","origin":"Hallows 2023 Item Pack","demand":6,"rarity":4,"value":1600,"change":25,"range":"1,600 – 1,615"},{"name":"Darksword","tier":"Tier 3","stability":"Doing Well","origin":"Hallows 2023 Item Pack","demand":6,"rarity":4,"value":1575,"change":25,"range":"1,575 – 1,590"},{"name":"Raygun","tier":"Tier 3","stability":"Stable","origin":"Hallows 2025 (Tier 25)","demand":6,"rarity":3,"value":1375,"change":25,"range":"N/A"},{"name":"Blossom","tier":"Tier 3","stability":"Stable","origin":"Valentine 2023 Item Pack","demand":6,"rarity":4,"value":1265,"change":10,"range":"N/A"},{"name":"Sakura","tier":"Tier 3","stability":"Stable","origin":"Valentine 2023 Item Pack","demand":6,"rarity":4,"value":1255,"change":10,"range":"N/A"},{"name":"Sunrise","tier":"Tier 3","stability":"Doing Well","origin":"Summer 2025 (Unboxed)","demand":6,"rarity":4,"value":1050,"change":25,"range":"1,050 – 1,075"},{"name":"Bauble","tier":"Tier 3","stability":"Stable","origin":"Xmas 2024 (Gifting)","demand":5,"rarity":4,"value":900,"change":-25,"range":"N/A"},{"name":"Snowcannon","tier":"Tier 3","stability":"Stable","origin":"Xmas 2025 (Tier 30)","demand":5,"rarity":3,"value":825,"change":25,"range":"N/A"},{"name":"Sunset","tier":"Tier 3","stability":"Doing Well","origin":"Summer 2025 (Tier 25)","demand":5,"rarity":3,"value":550,"change":10,"range":"550 – 575"},{"name":"Soul","tier":"Tier 3","stability":"Stable","origin":"Hallows 2024 Item Pack","demand":5,"rarity":3,"value":530,"change":5,"range":"N/A"},{"name":"Spirit","tier":"Tier 3","stability":"Stable","origin":"Hallows 2024 Item Pack","demand":5,"rarity":3,"value":520,"change":5,"range":"N/A"},{"name":"Rainbow Gun","tier":"Tier 3","stability":"Stable","origin":"Easter 2023 Item Pack","demand":5,"rarity":3,"value":420,"change":5,"range":"N/A"},{"name":"Flora","tier":"Tier 3","stability":"Stable","origin":"Easter 2025 Item Pack","demand":5,"rarity":3,"value":410,"change":10,"range":"N/A"},{"name":"Rainbow","tier":"Tier 3","stability":"Stable","origin":"Easter 2023 Item Pack","demand":5,"rarity":3,"value":410,"change":5,"range":"N/A"},{"name":"Bloom","tier":"Tier 3","stability":"Stable","origin":"Easter 2025 Item Pack","demand":5,"rarity":3,"value":400,"change":10,"range":"N/A"},{"name":"Heart Wand","tier":"Tier 3","stability":"Stable","origin":"Valentine 2026 (Unboxed)","demand":4,"rarity":3,"value":330,"change":10,"range":"N/A"},{"name":"Ocean","tier":"Tier 3","stability":"Stable","origin":"Summer 2023 Item Pack","demand":4,"rarity":3,"value":280,"change":-5,"range":"N/A"},{"name":"Waves","tier":"Tier 3","stability":"Stable","origin":"Summer 2023 Item Pack","demand":4,"rarity":3,"value":275,"change":-5,"range":"N/A"},{"name":"Xenoknife","tier":"Tier 3","stability":"Stable","origin":"Hallows 2025 Item Pack","demand":4,"rarity":3,"value":270,"change":-5,"range":"N/A"},{"name":"Xenoshot","tier":"Tier 3","stability":"Stable","origin":"Hallows 2025 Item Pack","demand":4,"rarity":3,"value":270,"change":-5,"range":"N/A"},{"name":"Flowerwood Gun","tier":"Tier 3","stability":"Stable","origin":"Easter 2024 Item Pack","demand":4,"rarity":3,"value":260,"change":-5,"range":"N/A"},{"name":"Snow Dagger","tier":"Tier 3","stability":"Stable","origin":"Xmas 2025 (Unboxed)","demand":4,"rarity":3,"value":260,"change":5,"range":"N/A"},{"name":"Flowerwood","tier":"Tier 3","stability":"Stable","origin":"Easter 2024 Item Pack","demand":4,"rarity":3,"value":255,"change":-5,"range":"N/A"},{"name":"Blizzard","tier":"Tier 3","stability":"Stable","origin":"Xmas 2025 Item Pack","demand":4,"rarity":3,"value":250,"change":15,"range":"N/A"},{"name":"Snowstorm","tier":"Tier 3","stability":"Stable","origin":"Xmas 2025 Item Pack","demand":4,"rarity":3,"value":250,"change":15,"range":"N/A"},{"name":"Watergun","tier":"Tier 3","stability":"Stable","origin":"Summer 2024 (Unboxed)","demand":3,"rarity":3,"value":250,"change":-10,"range":"N/A"},{"name":"Treat","tier":"Tier 3","stability":"Stable","origin":"Valentine 2026 Item Pack","demand":3,"rarity":3,"value":175,"change":10,"range":"N/A"},{"name":"Sweet","tier":"Tier 3","stability":"Stable","origin":"Valentine 2026 Item Pack","demand":3,"rarity":3,"value":170,"change":10,"range":"N/A"},{"name":"Borealis","tier":"Tier 3","stability":"Stable","origin":"Xmas 2024 Item Pack","demand":3,"rarity":3,"value":155,"change":-5,"range":"N/A"},{"name":"Australis","tier":"Tier 3","stability":"Stable","origin":"Xmas 2024 Item Pack","demand":3,"rarity":3,"value":150,"change":-5,"range":"N/A"},{"name":"Bat","tier":"Tier 3","stability":"Stable","origin":"Hallows 2022 (Zombie)","demand":2,"rarity":2,"value":120,"change":-5,"range":"N/A"},{"name":"Pearlshine","tier":"Tier 3","stability":"Stable","origin":"Summer 2024 Item Pack","demand":2,"rarity":3,"value":100,"change":5,"range":"N/A"},{"name":"Pearl","tier":"Tier 3","stability":"Stable","origin":"Summer 2024 Item Pack","demand":2,"rarity":3,"value":95,"change":5,"range":"N/A"},{"name":"Candy","tier":"Tier 2","stability":"Stable","origin":"Xmas 2015 (Unboxed)","demand":1,"rarity":2,"value":80,"change":-5,"range":"N/A"},{"name":"Heartblade","tier":"Tier 2","stability":"Stable","origin":"Valentine 2021 Item Pack","demand":1,"rarity":2,"value":68,"change":-2,"range":"N/A"},{"name":"Luger","tier":"Tier 2","stability":"Stable","origin":"Gun Box #1","demand":1,"rarity":2,"value":45,"change":-5,"range":"N/A"},{"name":"Red Luger","tier":"Tier 2","stability":"Stable","origin":"Xmas 2015 (Crafted)","demand":1,"rarity":2,"value":40,"change":-2,"range":"N/A"},{"name":"Phantom","tier":"Tier 2","stability":"Stable","origin":"Hallows 2022 Item Pack","demand":1,"rarity":2,"value":37,"change":-1,"range":"N/A"},{"name":"Spectre","tier":"Tier 2","stability":"Stable","origin":"Hallows 2022 Item Pack","demand":1,"rarity":2,"value":37,"change":-1,"range":"N/A"},{"name":"Candleflame","tier":"Tier 2","stability":"Stable","origin":"Hallows 2021 (Unboxed)","demand":1,"rarity":2,"value":35,"change":-3,"range":"N/A"},{"name":"Darkbringer","tier":"Tier 2","stability":"Stable","origin":"Mystery Crate #2","demand":1,"rarity":2,"value":35,"change":-3,"range":"N/A"},{"name":"Elderwood Blade","tier":"Tier 2","stability":"Stable","origin":"Hallows 2022 (Unboxed)","demand":1,"rarity":2,"value":35,"change":-3,"range":"N/A"},{"name":"Elderwood Revolver","tier":"Tier 2","stability":"Stable","origin":"Hallows 2019 (Unboxed)","demand":1,"rarity":2,"value":35,"change":-3,"range":"N/A"},{"name":"Iceblaster","tier":"Tier 2","stability":"Stable","origin":"Xmas 2020 (Unboxed)","demand":1,"rarity":2,"value":35,"change":-3,"range":"N/A"},{"name":"Lightbringer","tier":"Tier 2","stability":"Stable","origin":"Mystery Crate #2","demand":1,"rarity":2,"value":35,"change":-2,"range":"N/A"},{"name":"Makeshift","tier":"Tier 2","stability":"Stable","origin":"Hallows 2022 (Survivor)","demand":1,"rarity":2,"value":35,"change":-3,"range":"N/A"},{"name":"Sugar","tier":"Tier 2","stability":"Stable","origin":"Xmas 2015 (Unboxed)","demand":1,"rarity":2,"value":35,"change":-2,"range":"N/A"},{"name":"Ornament","tier":"Tier 2","stability":"Fluctuating","origin":"Xmas 2025 (Gifting)","demand":1,"rarity":2,"value":27,"change":-1,"range":"25 – 28"},{"name":"Green Luger","tier":"Tier 2","stability":"Stable","origin":"Xmas 2015 (Crafted)","demand":1,"rarity":2,"value":25,"change":-5,"range":"N/A"},{"name":"Amerilaser","tier":"Tier 2","stability":"Stable","origin":"American Item Pack","demand":1,"rarity":2,"value":23,"change":-2,"range":"N/A"},{"name":"Hallowgun","tier":"Tier 2","stability":"Stable","origin":"Hallows 2020 (Unboxed)","demand":1,"rarity":2,"value":23,"change":-2,"range":"N/A"},{"name":"Laser","tier":"Tier 2","stability":"Stable","origin":"Gun Box #3","demand":1,"rarity":2,"value":23,"change":-4,"range":"N/A"},{"name":"Nightblade","tier":"Tier 2","stability":"Stable","origin":"Shadow Item Pack","demand":1,"rarity":2,"value":20,"change":-2,"range":"N/A"},{"name":"Shark","tier":"Tier 2","stability":"Stable","origin":"Gun Box #2","demand":1,"rarity":2,"value":20,"change":-3,"range":"N/A"},{"name":"Blaster","tier":"Tier 1","stability":"Stable","origin":"Futuristic Item Pack","demand":1,"rarity":2,"value":18,"change":-2,"range":"N/A"},{"name":"Iceflake","tier":"Tier 1","stability":"Stable","origin":"Xmas 2021 Item Pack","demand":1,"rarity":2,"value":18,"change":-2,"range":"N/A"},{"name":"Plasmabeam","tier":"Tier 1","stability":"Stable","origin":"Plasmabeam Item Pack","demand":1,"rarity":2,"value":18,"change":-4,"range":"N/A"},{"name":"Battleaxe II","tier":"Tier 1","stability":"Stable","origin":"Hallows 2018 (Tier 100)","demand":1,"rarity":2,"value":17,"change":-1,"range":"N/A"},{"name":"Ginger Luger","tier":"Tier 1","stability":"Stable","origin":"Xmas 2018 (Crafted)","demand":1,"rarity":2,"value":17,"change":-3,"range":"N/A"},{"name":"Old Glory","tier":"Tier 1","stability":"Stable","origin":"American Item Pack","demand":1,"rarity":2,"value":17,"change":-1,"range":"N/A"},{"name":"Pixel","tier":"Tier 1","stability":"Stable","origin":"8-Bit Item Pack","demand":1,"rarity":2,"value":17,"change":-3,"range":"N/A"},{"name":"Plasmablade","tier":"Tier 1","stability":"Stable","origin":"Plasmablade Item Pack","demand":1,"rarity":2,"value":17,"change":-3,"range":"N/A"},{"name":"Slasher","tier":"Tier 1","stability":"Stable","origin":"Knife Box #4","demand":1,"rarity":2,"value":17,"change":-1,"range":"N/A"},{"name":"Cookiecane","tier":"Tier 1","stability":"Stable","origin":"Xmas 2022 (Unboxed)","demand":1,"rarity":2,"value":15,"change":-3,"range":"N/A"},{"name":"Eternalcane","tier":"Tier 1","stability":"Stable","origin":"MM2 Shop Promo","demand":1,"rarity":2,"value":15,"change":-2,"range":"N/A"},{"name":"Gemstone","tier":"Tier 1","stability":"Stable","origin":"Mystery Box #1","demand":1,"rarity":2,"value":15,"change":-2,"range":"N/A"},{"name":"Gingerblade","tier":"Tier 1","stability":"Stable","origin":"Xmas 2018 (Unboxed)","demand":1,"rarity":2,"value":15,"change":-2,"range":"N/A"},{"name":"Gingermint","tier":"Tier 1","stability":"Stable","origin":"Xmas 2022 (Gifting)","demand":1,"rarity":2,"value":15,"change":-3,"range":"N/A"},{"name":"Jinglegun","tier":"Tier 1","stability":"Stable","origin":"Xmas 2020 (Gifting)","demand":1,"rarity":2,"value":15,"change":-2,"range":"N/A"},{"name":"Lugercane","tier":"Tier 1","stability":"Stable","origin":"Xmas 2019 (Gifting)","demand":1,"rarity":2,"value":15,"change":-3,"range":"N/A"},{"name":"Minty","tier":"Tier 1","stability":"Stable","origin":"Xmas 2019 (Unboxed)","demand":1,"rarity":2,"value":15,"change":-3,"range":"N/A"},{"name":"Nebula","tier":"Tier 1","stability":"Stable","origin":"Nebula Item Pack","demand":1,"rarity":2,"value":15,"change":-2,"range":"N/A"},{"name":"Virtual","tier":"Tier 1","stability":"Stable","origin":"Futuristic Item Pack","demand":1,"rarity":2,"value":15,"change":-2,"range":"N/A"},{"name":"Deathshard","tier":"Tier 1","stability":"Stable","origin":"Knife Box #1","demand":1,"rarity":2,"value":13,"change":-2,"range":"N/A"},{"name":"Battleaxe","tier":"Tier 1","stability":"Stable","origin":"Hallows 2017 Item Pack","demand":1,"rarity":2,"value":12,"change":0,"range":"N/A"},{"name":"Bioblade","tier":"Tier 0","stability":"Stable","origin":"Bioblade Item Pack","demand":1,"rarity":2,"value":10,"change":-2,"range":"N/A"},{"name":"Heat","tier":"Tier 0","stability":"Stable","origin":"Rainbow Box","demand":1,"rarity":2,"value":10,"change":-2,"range":"N/A"},{"name":"Spider","tier":"Tier 0","stability":"Stable","origin":"Hallows 2015 (Bingo)","demand":1,"rarity":2,"value":10,"change":-2,"range":"N/A"},{"name":"Tides","tier":"Tier 0","stability":"Stable","origin":"Knife Box #5","demand":1,"rarity":2,"value":10,"change":-2,"range":"N/A"},{"name":"Eternal","tier":"Tier 0","stability":"Stable","origin":"MM2 Shop Promo","demand":1,"rarity":2,"value":8,"change":0,"range":"N/A"},{"name":"Eternal II","tier":"Tier 0","stability":"Stable","origin":"MM2 Shop Promo","demand":1,"rarity":2,"value":8,"change":0,"range":"N/A"},{"name":"Hallow's Blade","tier":"Tier 0","stability":"Stable","origin":"Hallows 2017 (Bought)","demand":1,"rarity":2,"value":8,"change":0,"range":"N/A"},{"name":"Hallow's Edge","tier":"Tier 0","stability":"Stable","origin":"Hallows 2016 (Unboxed)","demand":1,"rarity":2,"value":8,"change":0,"range":"N/A"},{"name":"Handsaw","tier":"Tier 0","stability":"Stable","origin":"Xmas 2015 (Crafted)","demand":1,"rarity":2,"value":8,"change":0,"range":"N/A"},{"name":"Xmas","tier":"Tier 0","stability":"Stable","origin":"Xmas 2015 (Bought)","demand":1,"rarity":2,"value":8,"change":0,"range":"N/A"},{"name":"Boneblade","tier":"Tier 0","stability":"Stable","origin":"Hallows 2018 (Unboxed)","demand":1,"rarity":2,"value":7,"change":0,"range":"N/A"},{"name":"Ghostblade","tier":"Tier 0","stability":"Stable","origin":"Hallows 2019 Item Pack","demand":1,"rarity":2,"value":7,"change":0,"range":"N/A"},{"name":"Ice Dragon","tier":"Tier 0","stability":"Stable","origin":"Xmas 2016 (Bought)","demand":1,"rarity":2,"value":7,"change":-1,"range":"N/A"},{"name":"Saw","tier":"Tier 0","stability":"Stable","origin":"Knife Box #3","demand":1,"rarity":2,"value":7,"change":0,"range":"N/A"},{"name":"Flames","tier":"Tier 0","stability":"Stable","origin":"MM2 Classic Crafting","demand":1,"rarity":2,"value":5,"change":-2,"range":"N/A"},{"name":"Snowflake","tier":"Tier 0","stability":"Stable","origin":"Xmas 2017 (Bought)","demand":1,"rarity":2,"value":5,"change":0,"range":"N/A"},{"name":"Peppermint","tier":"Tier 0","stability":"Stable","origin":"Xmas 2020 Item Pack","demand":1,"rarity":2,"value":4,"change":0,"range":"N/A"},{"name":"Cookieblade","tier":"Tier 0","stability":"Stable","origin":"Xmas 2020 Item Pack","demand":1,"rarity":2,"value":3,"change":0,"range":"N/A"},{"name":"Seer","tier":"Tier 0","stability":"Stable","origin":"Crafting","demand":1,"rarity":1,"value":3,"change":0,"range":"N/A"}],"legendaries":[{"name":"JD","tier":"Special","stability":"Stable","origin":"JD Giveaway","demand":2,"rarity":2,"value":32,"change":-3,"range":"N/A"},{"name":"Latte (Gun)","tier":"Tier 3","stability":"Stable","origin":"Thanksgiving 2023 Pack","demand":3,"rarity":3,"value":180,"change":-10,"range":"N/A"},{"name":"Latte (Knife)","tier":"Tier 3","stability":"Stable","origin":"Thanksgiving 2023 Pack","demand":3,"rarity":3,"value":180,"change":-10,"range":"N/A"},{"name":"Spectral (Knife)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2021 (Tier 29)","demand":3,"rarity":4,"value":80,"change":-5,"range":"N/A"},{"name":"Traveler (Gun)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2023 (Tier 29)","demand":3,"rarity":4,"value":80,"change":-5,"range":"N/A"},{"name":"Aurora (Gun)","tier":"Tier 3","stability":"Stable","origin":"Xmas 2021 (Tier 19)","demand":3,"rarity":4,"value":75,"change":-5,"range":"N/A"},{"name":"Vampire (Gun)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2022 (Tier 19)","demand":3,"rarity":4,"value":75,"change":-5,"range":"N/A"},{"name":"Cotton Candy","tier":"Tier 3","stability":"Stable","origin":"Candy Tycoon Promo","demand":2,"rarity":2,"value":40,"change":0,"range":"N/A"},{"name":"Beach","tier":"Tier 3","stability":"Stable","origin":"Summer 2023 (Tier 12)","demand":2,"rarity":3,"value":35,"change":5,"range":"N/A"},{"name":"Arctic (Gun)","tier":"Tier 3","stability":"Stable","origin":"Xmas 2022 (Tier 19)","demand":2,"rarity":4,"value":10,"change":3,"range":"N/A"},{"name":"Cavern (Knife)","tier":"Tier 3","stability":"Stable","origin":"Xmas 2019 (Tier 29)","demand":2,"rarity":3,"value":7,"change":-1,"range":"N/A"},{"name":"Broken","tier":"Tier 3","stability":"Stable","origin":"Valentine 2023 (Tier 5)","demand":2,"rarity":2,"value":7,"change":0,"range":"N/A"},{"name":"Icedriller","tier":"Tier 3","stability":"Stable","origin":"Xmas 2020 (Tier 19)","demand":2,"rarity":2,"value":5,"change":-2,"range":"N/A"},{"name":"Nightsky","tier":"Tier 3","stability":"Stable","origin":"Xmas 2024 (Tier 19)","demand":2,"rarity":2,"value":5,"change":1,"range":"N/A"},{"name":"Ghost (Knife)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2018 (Tier 50)","demand":1,"rarity":3,"value":5,"change":0,"range":"N/A"},{"name":"Bunnies","tier":"Tier 3","stability":"Stable","origin":"Easter 2025 (Tier 6)","demand":2,"rarity":2,"value":4,"change":-1,"range":"N/A"},{"name":"Red Scratch","tier":"Tier 3","stability":"Stable","origin":"Hallows 2016 (Unboxed)","demand":1,"rarity":3,"value":4,"change":0,"range":"N/A"},{"name":"Aurora (Knife)","tier":"Tier 3","stability":"Stable","origin":"Xmas 2021 (Unboxed)","demand":2,"rarity":2,"value":3,"change":1,"range":"N/A"},{"name":"Spectral (Gun)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2021 (Unboxed)","demand":2,"rarity":2,"value":3,"change":1,"range":"N/A"},{"name":"Traveler (Knife)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2023 (Unboxed)","demand":2,"rarity":2,"value":3,"change":1,"range":"N/A"},{"name":"Vampire (Knife)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2022 (Unboxed)","demand":2,"rarity":2,"value":3,"change":1,"range":"N/A"},{"name":"Witched","tier":"Tier 3","stability":"Stable","origin":"Hallows 2019 (Tier 35)","demand":2,"rarity":2,"value":3,"change":-1,"range":"N/A"},{"name":"Blue Elite","tier":"Tier 3","stability":"Stable","origin":"Xmas 2017 (Buying Elite)","demand":1,"rarity":3,"value":3,"change":0,"range":"N/A"},{"name":"Green Elite","tier":"Tier 3","stability":"Stable","origin":"Xmas 2015 (Buying Elite)","demand":1,"rarity":3,"value":3,"change":0,"range":"N/A"},{"name":"Santa's Magic","tier":"Tier 3","stability":"Stable","origin":"Xmas 2019 (Challenge)","demand":1,"rarity":3,"value":3,"change":0,"range":"N/A"},{"name":"Santa's Spirit","tier":"Tier 3","stability":"Stable","origin":"Xmas 2020 (Challenge)","demand":1,"rarity":3,"value":3,"change":0,"range":"N/A"},{"name":"Energized (Gun)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2025 (Tier 23)","demand":2,"rarity":2,"value":2,"change":1,"range":"N/A"},{"name":"Frostfade (Knife)","tier":"Tier 3","stability":"Stable","origin":"Xmas 2023 (Tier 19)","demand":2,"rarity":2,"value":2,"change":1,"range":"N/A"},{"name":"Blue Scratch","tier":"Tier 3","stability":"Stable","origin":"Hallows 2017 (Unboxed)","demand":1,"rarity":3,"value":2,"change":0,"range":"N/A"},{"name":"Ghost (Gun)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2018 (Unboxed)","demand":1,"rarity":3,"value":2,"change":0,"range":"N/A"},{"name":"Chromatic (Knife)","tier":"Tier 3","stability":"Stable","origin":"Easter 2023 Bingo","demand":2,"rarity":2,"value":1,"change":-1,"range":"N/A"},{"name":"Icecracker","tier":"Tier 3","stability":"Stable","origin":"Xmas 2020 (Unboxed)","demand":2,"rarity":2,"value":1,"change":-1,"range":"N/A"},{"name":"Red Fire","tier":"Tier 3","stability":"Stable","origin":"Xmas 2017 (Challenge)","demand":1,"rarity":3,"value":1,"change":0,"range":"N/A"},{"name":"Cavern (Gun)","tier":"Tier 3","stability":"Stable","origin":"Xmas 2019 (Unboxed)","demand":1,"rarity":2,"value":1,"change":0,"range":"N/A"}],"rares":[{"name":"Cane Knife (2018)","tier":"Tier 3","stability":"Stable","origin":"Xmas 2018 (Tier 30)","demand":4,"rarity":5,"value":600,"change":-25,"range":"N/A"},{"name":"Dungeon","tier":"Tier 3","stability":"Stable","origin":"Hallows 2019 (Unboxed)","demand":4,"rarity":5,"value":370,"change":10,"range":"N/A"},{"name":"Darkknife","tier":"Tier 3","stability":"Stable","origin":"Hallows 2023 (Tier 25)","demand":3,"rarity":4,"value":90,"change":10,"range":"N/A"},{"name":"Makeshift (Knife)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2022 (Survivor)","demand":3,"rarity":4,"value":50,"change":5,"range":"N/A"},{"name":"Silent Night (Knife)","tier":"Tier 3","stability":"Stable","origin":"Xmas 2020 (Tier 15)","demand":2,"rarity":4,"value":50,"change":-5,"range":"N/A"},{"name":"Zombified","tier":"Tier 3","stability":"Stable","origin":"Hallows 2022 (Zombie)","demand":3,"rarity":4,"value":45,"change":5,"range":"N/A"},{"name":"Starry (Gun)","tier":"Tier 3","stability":"Stable","origin":"Xmas 2021 (Tier 17)","demand":2,"rarity":4,"value":27,"change":2,"range":"N/A"},{"name":"Swirl","tier":"Tier 3","stability":"Stable","origin":"Xmas 2021 (Tier 15)","demand":2,"rarity":4,"value":27,"change":2,"range":"N/A"},{"name":"Magma (Gun)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2021 (Tier 20)","demand":2,"rarity":4,"value":12,"change":2,"range":"N/A"},{"name":"Watcher (Gun)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2021 (Tier 24)","demand":2,"rarity":4,"value":12,"change":2,"range":"N/A"},{"name":"Aurora (Knife)","tier":"Tier 3","stability":"Stable","origin":"Xmas 2019 (Tier 20)","demand":2,"rarity":3,"value":12,"change":-1,"range":"N/A"},{"name":"Floral (Knife)","tier":"Tier 3","stability":"Stable","origin":"Summer 2023 (Tier 10)","demand":2,"rarity":3,"value":12,"change":2,"range":"N/A"},{"name":"Silent Night (Gun)","tier":"Tier 3","stability":"Stable","origin":"Xmas 2020 (Unboxed)","demand":2,"rarity":3,"value":12,"change":-1,"range":"N/A"},{"name":"Toxic (Knife)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2018 (Tier 30)","demand":2,"rarity":3,"value":7,"change":-1,"range":"N/A"},{"name":"Vampire (Gun)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2018 (Tier 22)","demand":2,"rarity":3,"value":7,"change":-1,"range":"N/A"},{"name":"Ghastly (Gun)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2023 (Tier 21)","demand":2,"rarity":4,"value":5,"change":2,"range":"N/A"},{"name":"Ghostfire","tier":"Tier 3","stability":"Stable","origin":"Hallows 2022 (Tier 18)","demand":2,"rarity":3,"value":5,"change":2,"range":"N/A"},{"name":"Icicles (Gun)","tier":"Tier 3","stability":"Stable","origin":"Xmas 2018 (Tier 22)","demand":2,"rarity":3,"value":5,"change":-3,"range":"N/A"},{"name":"Sun","tier":"Tier 3","stability":"Stable","origin":"Summer 2023 (Tier 9)","demand":2,"rarity":3,"value":5,"change":2,"range":"N/A"},{"name":"Candy Swirl (Gun)","tier":"Tier 3","stability":"Stable","origin":"Xmas 2019 (Tier 24)","demand":2,"rarity":3,"value":3,"change":-2,"range":"N/A"},{"name":"Jack","tier":"Tier 3","stability":"Stable","origin":"Hallows 2015 (Bingo)","demand":2,"rarity":3,"value":3,"change":0,"range":"N/A"},{"name":"Snakebite (Knife)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2019 (Tier 23)","demand":2,"rarity":3,"value":3,"change":-2,"range":"N/A"},{"name":"Snowflakes","tier":"Tier 3","stability":"Stable","origin":"Xmas 2020 (Unboxed)","demand":2,"rarity":3,"value":3,"change":1,"range":"N/A"},{"name":"Bats","tier":"Tier 3","stability":"Stable","origin":"Hallows 2016 (Unboxed)","demand":1,"rarity":3,"value":3,"change":0,"range":"N/A"},{"name":"Magma","tier":"Tier 3","stability":"Stable","origin":"Hallows 2017 (Unboxed)","demand":1,"rarity":3,"value":3,"change":-2,"range":"N/A"},{"name":"Green Marble","tier":"Tier 3","stability":"Stable","origin":"Hallows 2017 (Unboxed)","demand":1,"rarity":3,"value":2,"change":-1,"range":"N/A"},{"name":"Orange Marble","tier":"Tier 3","stability":"Stable","origin":"Hallows 2016 (Unboxed)","demand":1,"rarity":3,"value":2,"change":0,"range":"N/A"},{"name":"Toxic (Gun)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2018 (Unboxed)","demand":1,"rarity":2,"value":2,"change":0,"range":"N/A"},{"name":"Darkgun","tier":"Tier 3","stability":"Stable","origin":"Hallows 2023 (Unboxed)","demand":2,"rarity":3,"value":1,"change":1,"range":"N/A"},{"name":"Wraith (Knife)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2022 (Tier 13)","demand":2,"rarity":3,"value":1,"change":1,"range":"N/A"},{"name":"Gingerbread","tier":"Tier 3","stability":"Stable","origin":"Xmas 2017 (Unboxed)","demand":1,"rarity":3,"value":1,"change":0,"range":"N/A"},{"name":"Monster","tier":"Tier 3","stability":"Stable","origin":"Hallows 2019 (Tier 15)","demand":1,"rarity":3,"value":1,"change":-1,"range":"N/A"}],"pets":[{"name":"Zombie Dog","tier":"Tier 4","stability":"Stable","origin":"Hallows 2019 (Tier 25)","demand":4,"rarity":5,"value":800,"change":-25,"range":"N/A"},{"name":"Elf (2019)","tier":"Tier 4","stability":"Stable","origin":"Xmas 2019 (Tier 12)","demand":3,"rarity":5,"value":350,"change":25,"range":"N/A"},{"name":"Blue Pumpkin","tier":"Tier 4","stability":"Stable","origin":"Hallows 2018 (Tier 18)","demand":3,"rarity":4,"value":220,"change":10,"range":"N/A"},{"name":"Black Cat","tier":"Tier 4","stability":"Underpaid For","origin":"Hallows 2019 (Tier 5)","demand":3,"rarity":4,"value":160,"change":-10,"range":"150 – 160"},{"name":"Dogey","tier":"Tier 4","stability":"Stable","origin":"Classic Pet Box","demand":3,"rarity":4,"value":140,"change":5,"range":"N/A"},{"name":"Red Pumpkin","tier":"Tier 4","stability":"Stable","origin":"Hallows 2018 (Tier 12)","demand":3,"rarity":4,"value":120,"change":5,"range":"N/A"},{"name":"Green Pumpkin","tier":"Tier 4","stability":"Stable","origin":"Hallows 2018 (Tier 9)","demand":3,"rarity":4,"value":60,"change":5,"range":"N/A"},{"name":"Mr. Reindeer","tier":"Tier 4","stability":"Stable","origin":"Xmas 2020 (Tier 10)","demand":3,"rarity":4,"value":50,"change":5,"range":"N/A"},{"name":"Pumpkin (2017)","tier":"Tier 4","stability":"Stable","origin":"Hallows 2017","demand":3,"rarity":5,"value":45,"change":5,"range":"N/A"},{"name":"Piggy","tier":"Tier 4","stability":"Stable","origin":"Classic Pet Box","demand":2,"rarity":3,"value":40,"change":5,"range":"N/A"},{"name":"Elf","tier":"Tier 3","stability":"Stable","origin":"Xmas 2016 (Bought)","demand":2,"rarity":4,"value":15,"change":3,"range":"N/A"},{"name":"Red Pumpkin (2020)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2020 (Tier 26)","demand":2,"rarity":4,"value":15,"change":3,"range":"N/A"},{"name":"Red Pumpkin (2021)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2021 (Tier 27)","demand":2,"rarity":4,"value":15,"change":5,"range":"N/A"},{"name":"Skully","tier":"Tier 3","stability":"Stable","origin":"Hallows 2021 (Tier 21)","demand":2,"rarity":4,"value":12,"change":2,"range":"N/A"},{"name":"Green Pumpkin (2020)","tier":"Tier 3","stability":"Stable","origin":"Hallows 2020 (Tier 18)","demand":2,"rarity":4,"value":10,"change":2,"range":"N/A"},{"name":"Mr. Snowman","tier":"Tier 3","stability":"Stable","origin":"Xmas 2020 (Tier 4)","demand":2,"rarity":3,"value":10,"change":3,"range":"N/A"},{"name":"Heart Pet","tier":"Tier 3","stability":"Stable","origin":"Valentine 2016","demand":1,"rarity":3,"value":7,"change":-1,"range":"N/A"},{"name":"Nobledragon","tier":"Tier 3","stability":"Underpaid For","origin":"Classic Pet Box","demand":1,"rarity":2,"value":7,"change":-1,"range":"5 – 7"},{"name":"Chilly","tier":"Tier 2","stability":"Underpaid For","origin":"Classic Pet Box","demand":1,"rarity":2,"value":5,"change":-2,"range":"3 – 5"},{"name":"Eyeball","tier":"Tier 2","stability":"Underpaid For","origin":"In-Game Shop (Expired)","demand":1,"rarity":2,"value":5,"change":-2,"range":"3 – 5"},{"name":"Fairy","tier":"Tier 2","stability":"Underpaid For","origin":"In-Game Shop (Expired)","demand":1,"rarity":2,"value":5,"change":-3,"range":"3 – 5"},{"name":"Jetstream","tier":"Tier 2","stability":"Underpaid For","origin":"In-Game Shop (Expired)","demand":1,"rarity":2,"value":5,"change":-2,"range":"3 – 5"},{"name":"Overseer Eye","tier":"Tier 2","stability":"Underpaid For","origin":"In-Game Shop (Expired)","demand":1,"rarity":2,"value":5,"change":-2,"range":"3 – 5"},{"name":"Pengy","tier":"Tier 2","stability":"Underpaid For","origin":"Classic Pet Box","demand":1,"rarity":2,"value":5,"change":-2,"range":"3 – 5"},{"name":"Reindeer","tier":"Tier 2","stability":"Underpaid For","origin":"Xmas 2016 (Bought)","demand":1,"rarity":2,"value":5,"change":-2,"range":"3 – 5"},{"name":"Rudolph","tier":"Tier 2","stability":"Underpaid For","origin":"Xmas 2019 (Tier 21)","demand":1,"rarity":2,"value":5,"change":-2,"range":"3 – 5"},{"name":"Vampire Bat","tier":"Tier 2","stability":"Underpaid For","origin":"Hallows 2019 (Tier 31)","demand":1,"rarity":2,"value":5,"change":-2,"range":"3 – 5"},{"name":"Shadow Pumpkin","tier":"Tier 2","stability":"Stable","origin":"Hallows 2021 (Tier 11)","demand":2,"rarity":3,"value":3,"change":1,"range":"N/A"},{"name":"Mechbug","tier":"Tier 2","stability":"Underpaid For","origin":"Classic Pet Box","demand":1,"rarity":3,"value":3,"change":-2,"range":"2 – 3"},{"name":"UFO","tier":"Tier 2","stability":"Underpaid For","origin":"Classic Pet Box","demand":1,"rarity":3,"value":3,"change":-1,"range":"2 – 3"},{"name":"Snowbear","tier":"Tier 2","stability":"Stable","origin":"Xmas 2021 (Tier 4)","demand":2,"rarity":3,"value":1,"change":1,"range":"N/A"},{"name":"Badger","tier":"Tier 2","stability":"Stable","origin":"Classic Pet Box","demand":1,"rarity":2,"value":1,"change":0,"range":"N/A"},{"name":"Santa 2019","tier":"Untradable","stability":"Untradable","origin":"Xmas 2019 (Tier 17)","demand":"N/A","rarity":4,"valueText":"N/A","range":"N/A"},{"name":"Ghosty","tier":"Untradable","stability":"Untradable","origin":"Hallows 2019 Item Pack","demand":"N/A","rarity":2,"valueText":"N/A","range":"N/A"},{"name":"Snowman","tier":"Untradable","stability":"Untradable","origin":"Xmas 2019 (Tier 1)","demand":"N/A","rarity":1,"valueText":"N/A","range":"N/A"}],"misc":[{"name":"Mystery Key","tier":"Non-Holiday","stability":"Stable","origin":"MM2 In-Game Shop","demand":2,"rarity":2,"value":1,"change":0,"range":"N/A"},{"name":"Box of Blue Papers","tier":"Christmas","stability":"Stable","origin":"Xmas 2017 (Bought)","demand":1,"rarity":3,"value":2,"change":-1,"range":"N/A"},{"name":"Box of Fertilizer","tier":"Christmas","stability":"Stable","origin":"Xmas 2018 (Bought)","demand":1,"rarity":3,"value":2,"change":0,"range":"N/A"},{"name":"Box of Gold Papers","tier":"Christmas","stability":"Stable","origin":"Xmas 2016 (Bought)","demand":1,"rarity":3,"value":2,"change":-1,"range":"N/A"},{"name":"Box of Green Papers","tier":"Christmas","stability":"Stable","origin":"Xmas 2016 (Bought)","demand":1,"rarity":3,"value":2,"change":0,"range":"N/A"},{"name":"Box of Purple Papers","tier":"Christmas","stability":"Stable","origin":"Xmas 2016 (Bought)","demand":1,"rarity":3,"value":2,"change":-1,"range":"N/A"},{"name":"Box of Red Papers","tier":"Christmas","stability":"Stable","origin":"Xmas 2016 (Bought)","demand":1,"rarity":3,"value":2,"change":-1,"range":"N/A"},{"name":"Box of Ultra Wrap","tier":"Christmas","stability":"Stable","origin":"Xmas 2017 (Bought)","demand":1,"rarity":3,"value":2,"change":-1,"range":"N/A"},{"name":"Gifts 2015","tier":"Christmas","stability":"Stable","origin":"Xmas 2015 Currency","demand":1,"rarity":3,"valueText":"x2 T1 Legendaries","range":"N/A"},{"name":"Snowflake Key","tier":"Christmas","stability":"Stable","origin":"Xmas 2018 Tiers","demand":1,"rarity":3,"valueText":"x2 T1 Legendaries","range":"N/A"},{"name":"Skeleton Key","tier":"Halloween","stability":"Stable","origin":"Hallows 2018 Tiers","demand":1,"rarity":3,"value":5,"change":0,"range":"N/A"},{"name":"Candies (2016)","tier":"Halloween","stability":"Stable","origin":"Hallows 2016 Currency","demand":1,"rarity":2,"valueText":"x2 T1 Commons","range":"N/A"},{"name":"Candies (2017)","tier":"Halloween","stability":"Stable","origin":"Hallows 2017 Currency","demand":1,"rarity":1,"valueText":"x1 T1 Common","range":"N/A"}],"untradables":[{"name":"Abduction","tier":"Effects","rarity":4,"description":"Surrounds the knife in a tractor beam","origin":"Hallows 2025 (Tier 24)"},{"name":"Aquatic","tier":"Effects","rarity":3,"description":"Surrounds the knife in blue waves","origin":"Summer 2025 (Tier 17)"},{"name":"Aurora","tier":"Effects","rarity":5,"description":"Cyan and pink aura around the knife","origin":"Xmas 2021 (Tier 18)"},{"name":"Bats","tier":"Effects","rarity":9,"description":"Bat particles around the knife","origin":"Hallows 2017 Item Pack"},{"name":"Bitsplosion","tier":"Effects","rarity":10,"description":"Bit particles; victim becomes colorful bits","origin":"8-Bit Item Pack"},{"name":"Bloom","tier":"Effects","rarity":5,"description":"Pink aura and flower particles","origin":"Easter 2025 Item Pack"},{"name":"Blue Flaming Knife","tier":"Effects","rarity":5,"description":"Blue flame and blue-fire elimination effect","origin":"In-Game Shop"},{"name":"Darkswirl","tier":"Effects","rarity":6,"description":"Black swirling fog","origin":"Hallows 2023 Item Pack"},{"name":"Electric Knife","tier":"Effects","rarity":5,"description":"Electric knife and elimination effect","origin":"In-Game Shop"},{"name":"Ethereal","tier":"Effects","rarity":8,"description":"Cyan fog around the knife","origin":"Hallows 2019 Item Pack"},{"name":"Gearstorm","tier":"Effects","rarity":10,"description":"Cog particles and cog elimination effect","origin":"Steampunk Item Pack"},{"name":"Glisten","tier":"Effects","rarity":5,"description":"Blue and purple beams of light","origin":"Summer 2024 Item Pack"},{"name":"Rainbow Flaming Knife","tier":"Effects","rarity":10,"description":"Rainbow flame and Chroma fire elimination","origin":"MM2 Shop Promo"},{"name":"Synthwave","tier":"Effects","rarity":4,"description":"TRON-inspired purple and blue grid shapes","origin":"Summer 2025 (Tier 24)"},{"name":"Blue Candy Cane","tier":"Radios","rarity":8,"origin":"Xmas 2017 (Bought)"},{"name":"Blue Sparkletime","tier":"Radios","rarity":7,"origin":"In-Game Shop"},{"name":"Candy Cane","tier":"Radios","rarity":8,"origin":"Xmas 2016 (Bought)"},{"name":"Diamond","tier":"Radios","rarity":8,"origin":"In-Game Shop"},{"name":"Elderwood","tier":"Radios","rarity":8,"origin":"Hallows 2019 (Bought)"},{"name":"Gingerbread","tier":"Radios","rarity":9,"origin":"Xmas 2016 (Bought)"},{"name":"Snowy","tier":"Radios","rarity":10,"origin":"Xmas 2016 (Bought)"},{"name":"Alien Plush","tier":"Emotes","rarity":1,"description":"Take out and hug an alien plushie","origin":"Hallows 2025 (Tier 1)"},{"name":"Beach Ball","tier":"Emotes","rarity":3,"description":"Hold a beach ball","origin":"Summer 2023 (Tier 5)"},{"name":"Headless","tier":"Emotes","rarity":10,"description":"Temporarily removes and replaces the avatar head","origin":"Hallows 2018 (Tier 25)"},{"name":"Snowball","tier":"Emotes","rarity":5,"description":"Take out and throw a snowball","origin":"Xmas 2020 (Tier 9)"},{"name":"Zombie","tier":"Emotes","rarity":10,"description":"Zombie walk animation","origin":"Hallows 2018 (Tier 16)"},{"name":"Decoy","tier":"Powers","description":"Places a decoy that can block a shot","origin":"400 Gems / 3,000 Coins"},{"name":"Ghost","tier":"Powers","description":"Go invisible for a few seconds","origin":"800 Gems / 6,000 Coins"},{"name":"Haste","tier":"Powers","description":"Move 10% faster while holding the knife","origin":"400 Gems / 3,000 Coins"},{"name":"Sprint","tier":"Powers","description":"Temporary 50% speed boost","origin":"400 Gems / 3,000 Coins"},{"name":"X-Ray","tier":"Powers","description":"See through walls for a few seconds","origin":"800 Gems / 6,000 Coins"}],"uncommons":[],"commons":[]};
+
+  const LOCAL_IMAGE_MAP = {"chroma ever set":"assets/items/chromaeverset.webp","chroma alien set":"assets/items/chromaalienset.webp","chroma bauble set":"assets/items/chromabaubleset.webp","chroma snow set":"assets/items/chromasnowset.webp","chroma blizzard set":"assets/items/chromablizzardset.webp","chroma sweet set":"assets/items/chromasweetset.webp","chroma bringer set":"assets/items/chromabringerset.webp","chroma slasher set":"assets/items/chromaslasherset.webp","traveler's set":"assets/items/travelersset.webp","ever set":"assets/items/everset.webp","celestial set":"assets/items/celestialset.webp","alien set":"assets/items/alienset.webp","dark set":"assets/items/darkset.webp","vampire's set":"assets/items/vampiresset.webp","sakura set":"assets/items/sakuraset.webp","sun set":"assets/items/sunset.webp","snow set":"assets/items/snowset.webp","soul set":"assets/items/soulset.webp","bauble set":"assets/items/baubleset.webp","rainbow set":"assets/items/rainbowset.webp","bloom set":"assets/items/bloomset.webp","ocean set":"assets/items/oceanset.webp","xeno set":"assets/items/xenoset.webp","corrupt set":"assets/items/corruptset.webp","flowerwood set":"assets/items/flowerwoodset.webp","blizzard set":"assets/items/blizzardset.webp","bow set":"assets/items/bowset.webp","sweet set":"assets/items/sweetset.webp","borealis set":"assets/items/borealisset.webp","full ice set":"assets/items/fulliceset.webp","pearl set":"assets/items/pearlset.webp","bat set":"assets/items/batset.webp","candy set":"assets/items/candyset.webp","full elderwood set":"assets/items/fullelderwoodset.webp","ice set":"assets/items/iceset.webp","full swirly set":"assets/items/fullswirlyset.webp","elderwood set":"assets/items/elderwoodset.webp","spectre set":"assets/items/spectreset.webp","bringer set":"assets/items/bringerset.webp","pumpkin set 2018":"assets/items/pumpkinset2018.webp","bats set":"assets/items/batsset.webp","zombified set":"assets/items/zombifiedset.webp","spectral set":"assets/items/spectralset.webp","full luger set":"assets/items/fulllugerset.webp","small set 107":"assets/items/smallset107.webp","corrupt":"assets/items/corrupt.webp","slouse's clown (gun)":"assets/items/slousesclowngun.webp","slouse's clown (knife)":"assets/items/slousesclownknife.webp","sharkseeker":"assets/items/sharkseeker.webp","dartbringer":"assets/items/dartbringer.webp","synthwave (var. 1)":"assets/items/synthwavevar1.webp","synthwave (var. 2)":"assets/items/synthwavevar2.webp","synthwave (var. 3)":"assets/items/synthwavevar3.webp","synthwave (var. 4)":"assets/items/synthwavevar4.webp","gingerscythe (var. 1)":"assets/items/gingerscythevar1.webp","gingerscythe (var. 2)":"assets/items/gingerscythevar2.webp","gingerscythe (var. 3)":"assets/items/gingerscythevar3.webp","gingerscythe (var. 4)":"assets/items/gingerscythevar4.webp","icecrusher (var. 1)":"assets/items/icecrushervar1.webp","icecrusher (var. 2)":"assets/items/icecrushervar2.webp","icecrusher (var. 3)":"assets/items/icecrushervar3.webp","icecrusher (var. 4)":"assets/items/icecrushervar4.webp","reaver (var. 1)":"assets/items/reavervar1.webp","reaver (var. 2)":"assets/items/reavervar2.webp","reaver (var. 3)":"assets/items/reavervar3.webp","reaver (var. 4)":"assets/items/reavervar4.webp","nik's scythe":"assets/items/niksscythe.webp","gingerscope":"assets/items/gingerscope.webp","traveler's axe":"assets/items/travelersaxe.webp","celestial":"assets/items/celestial.webp","vampire's axe":"assets/items/vampiresaxe.webp","harvester":"assets/items/harvester.webp","icepiercer":"assets/items/icepiercer.webp","icebreaker":"assets/items/icebreaker.webp","batwing":"assets/items/batwing.webp","swirly axe":"assets/items/swirlyaxe.webp","elderwood scythe":"assets/items/elderwoodscythe.webp","hallowscythe":"assets/items/hallowscythe.webp","logchopper":"assets/items/logchopper.webp","icewing":"assets/items/icewing.webp","ghost":"assets/items/ghost.webp","blood":"assets/items/blood.webp","laser":"assets/items/laser.webp","america":"assets/items/america.webp","prince":"assets/items/prince.webp","shadow":"assets/items/shadow.webp","phaser":"assets/items/phaser.webp","cowboy":"assets/items/cowboy.webp","golden":"assets/items/golden.webp","splitter":"assets/items/splitter.webp","chroma traveler's gun":"assets/items/chromatravelersgun.webp","chroma evergun":"assets/items/chromaevergun.webp","chroma evergreen":"assets/items/chromaevergreen.webp","chroma bauble":"assets/items/chromabauble.webp","chroma vampire's gun":"assets/items/chromavampiresgun.webp","chroma alienbeam":"assets/items/chromaalienbeam.webp","chroma snowcannon":"assets/items/chromasnowcannon.webp","chroma blizzard":"assets/items/chromablizzard.webp","chroma snowstorm":"assets/items/chromasnowstorm.webp","chroma treat":"assets/items/chromatreat.webp","chroma sweet":"assets/items/chromasweet.webp","chroma darkbringer":"assets/items/chromadarkbringer.webp","chroma lightbringer":"assets/items/chromalightbringer.webp","chroma luger":"assets/items/chromaluger.webp","chroma slasher":"assets/items/chromaslasher.webp","chroma seer":"assets/items/chromaseer.webp","chroma fire bunny":"assets/items/chromafirebunny.webp","traveler's gun":"assets/items/travelersgun.webp","evergun":"assets/items/evergun.webp","alienbeam":"assets/items/alienbeam.webp","darksword":"assets/items/darksword.webp","blossom":"assets/items/blossom.webp","sakura":"assets/items/sakura.webp","bauble":"assets/items/bauble.webp","snowcannon":"assets/items/snowcannon.webp","sunset":"assets/items/sunset.webp","soul":"assets/items/soul.webp","rainbow gun":"assets/items/rainbowgun.webp","rainbow":"assets/items/rainbow.webp","bloom":"assets/items/bloom.webp","waves":"assets/items/waves.webp","xenoknife":"assets/items/xenoknife.webp","flowerwood gun":"assets/items/flowerwoodgun.webp","flowerwood":"assets/items/flowerwood.webp","blizzard":"assets/items/blizzard.webp","sweet":"assets/items/sweet.webp","borealis":"assets/items/borealis.webp","bat":"assets/items/bat.webp","pearl":"assets/items/pearl.webp","candy":"assets/items/candy.webp","luger":"assets/items/luger.webp","phantom":"assets/items/phantom.webp","spectre":"assets/items/spectre.webp","candleflame":"assets/items/candleflame.webp","darkbringer":"assets/items/darkbringer.webp","elderwood blade":"assets/items/elderwoodblade.webp","lightbringer":"assets/items/lightbringer.webp","makeshift":"assets/items/makeshift.webp","ornament":"assets/items/ornament.webp","iceflake":"assets/items/iceflake.webp","old glory":"assets/items/oldglory.webp","plasmablade":"assets/items/plasmablade.webp","slasher":"assets/items/slasher.webp","cookiecane":"assets/items/cookiecane.webp","eternalcane":"assets/items/eternalcane.webp","gingerblade":"assets/items/gingerblade.webp","virtual":"assets/items/virtual.webp","snowflake":"assets/items/snowflake.webp","peppermint":"assets/items/peppermint.webp","spectral (knife)":"assets/items/spectralknife.webp","traveler (gun)":"assets/items/travelergun.webp","aurora (gun)":"assets/items/auroragun.webp","vampire (gun)":"assets/items/vampiregun.webp","cavern (knife)":"assets/items/cavernknife.webp","icedriller":"assets/items/icedriller.webp","ghost (knife)":"assets/items/ghostknife.webp","aurora (knife)":"assets/items/auroraknife.webp","spectral (gun)":"assets/items/spectralgun.webp","traveler (knife)":"assets/items/travelerknife.webp","vampire (knife)":"assets/items/vampireknife.webp","green elite":"assets/items/greenelite.webp","santa's magic":"assets/items/santasmagic.webp","ghost (gun)":"assets/items/ghostgun.webp","cavern (gun)":"assets/items/caverngun.webp","cane knife (2018)":"assets/items/caneknife2018.webp","dungeon":"assets/items/dungeon.webp","darkknife":"assets/items/darkknife.webp","makeshift (knife)":"assets/items/makeshiftknife.webp","silent night (knife)":"assets/items/silentnightknife.webp","zombified":"assets/items/zombified.webp","starry (gun)":"assets/items/starrygun.webp","swirl":"assets/items/swirl.webp","magma (gun)":"assets/items/magmagun.webp","watcher (gun)":"assets/items/watchergun.webp","floral (knife)":"assets/items/floralknife.webp","silent night (gun)":"assets/items/silentnightgun.webp","toxic (knife)":"assets/items/toxicknife.webp","ghastly (gun)":"assets/items/ghastlygun.webp","ghostfire":"assets/items/ghostfire.webp","icicles (gun)":"assets/items/iciclesgun.webp","candy swirl (gun)":"assets/items/candyswirlgun.webp","jack":"assets/items/jack.webp","snakebite (knife)":"assets/items/snakebiteknife.webp","snowflakes":"assets/items/snowflakes.webp","bats":"assets/items/bats.webp","magma":"assets/items/magma.webp","green marble":"assets/items/greenmarble.webp","orange marble":"assets/items/orangemarble.webp","toxic (gun)":"assets/items/toxicgun.webp","darkgun":"assets/items/darkgun.webp","wraith (knife)":"assets/items/wraithknife.webp","gingerbread":"assets/items/gingerbread.webp","monster":"assets/items/monster.webp","red pumpkin (2020)":"assets/items/redpumpkin2020.webp","red pumpkin (2021)":"assets/items/redpumpkin2021.webp","heart pet":"assets/items/heartpet.webp","eyeball":"assets/items/eyeball.webp","overseer eye":"assets/items/overseereye.webp","reindeer":"assets/items/reindeer.webp","ghosty":"assets/items/ghosty.webp","snowman":"assets/items/snowman.webp","abduction":"assets/items/abduction.webp","aurora":"assets/items/aurora.webp","snowy":"assets/items/snowy.webp","snowball":"assets/items/snowball.webp","zombie":"assets/items/zombie.webp"};
+  const I18N = {
+    en:{kicker:'MM2 VALUES • COMMUNITY DATABASE',notSeers:'Items are not valued in Seers',updated:'Snapshot: July 9, 2026',rounding:'Some sets may use rounded values and may not equal the exact sum of every included item.',search:'Search items or contents…',clear:'Clear',allStability:'All stability',valueHigh:'Value: high to low',valueLow:'Value: low to high',demandHigh:'Demand: high to low',rarityHigh:'Rarity: high to low',range:'Range',setsTitle:'Murder Mystery 2 Set Values',setsDesc:'Updated set values with demand, rarity, stability and value ranges.',uniqueTitle:'MM2 Unique Values',uniqueDesc:'Unique, promo and leaderboard items with rarity, owners and origin.',evoTitle:'MM2 Evo Values',evoDesc:'Evolution stages, classes, rarity and EXP requirements.',catalogDesc:'Values, demand, rarity, stability, origin and item images.',all:'All',contains:'CONTAINS / ORIGIN',value:'VALUE',demand:'DEMAND',rarity:'RARITY',noResults:'Nothing found. Try another search or reset filters.',items:'items',independent:'Independent interface • user-provided data',nav:{Home:'Home','Trading Servers':'Trading Servers','MM2 Trading':'MM2 Trading',Sets:'Sets',Uniques:'Uniques',Evos:'Evos',Ancients:'Ancients',Vintages:'Vintages',Chromas:'Chromas',Godlies:'Godlies',Legendaries:'Legendaries',Rares:'Rares',Uncommons:'Uncommons',Commons:'Commons',Pets:'Pets','Misc. Items':'Misc. Items',Untradables:'Untradables',Roblox:'Roblox'}},
+    ru:{kicker:'MM2 VALUES • БАЗА СООБЩЕСТВА',notSeers:'Предметы оцениваются не в Seers',updated:'Снимок данных: 9 июля 2026',rounding:'Некоторые наборы имеют округлённую стоимость и могут не совпадать с точной суммой предметов.',search:'Поиск по названию или составу…',clear:'Сбросить',allStability:'Любая стабильность',valueHigh:'Ценность: по убыванию',valueLow:'Ценность: по возрастанию',demandHigh:'Спрос: по убыванию',rarityHigh:'Редкость: по убыванию',range:'Диапазон',setsTitle:'Стоимость наборов MM2',setsDesc:'Актуальные значения наборов: спрос, редкость, стабильность и диапазон цены.',uniqueTitle:'Уникальные предметы MM2',uniqueDesc:'Уникальные, промо- и рейтинговые предметы с редкостью, владельцами и происхождением.',evoTitle:'Эволю  ии MM2',evoDesc:'Стадии эволюций, классы, редкость и требования EXP.',catalogDesc:'Ценность, спрос, редкость, стабильность, происхождение и изображения.',all:'Все',contains:'СОСТАВ / ПРОИСХОЖДЕНИЕ',value:'ЦЕННОСТЬ',demand:'СПРОС',rarity:'РЕДКОСТЬ',noResults:'Ничего не найдено. Измени запрос или сбрось фильтры.',items:'предметов',independent:'Независимый интерфейс • данные предоставлены пользователем',nav:{Home:'Главная','Trading Servers':'Торговые серверы','MM2 Trading':'MM2 трейды',Sets:'Наборы',Uniques:'Уникальные',Evos:'Эволюции',Ancients:'Древние',Vintages:'Винтажные',Chromas:'Хрома',Godlies:'Годли',Legendaries:'Легендарные',Rares:'Редкие',Uncommons:'Необычные',Commons:'Обычные',Pets:'Питомцы','Misc. Items':'Разное',Untradables:'Неторгуемые',Roblox:'Roblox'}},
+    uk:{kicker:'MM2 VALUES • БАЗА СПІЛЬНОТИ',notSeers:'Предмети оцінюються не в Seers',updated:'Знімок даних: 9 липня 2026',rounding:'Деякі набори мають округлену вартість і можуть не збігатися з точною сумою предметів.',search:'Пошук за назвою або складом…',clear:'Скинути',allStability:'Будь-яка стабільність',valueHigh:'Цінність: за спаданням',valueLow:'Цінність: за зростанням',demandHigh:'Попит: за спаданням',rarityHigh:'Рідкість: за спаданням',range:'Діапазон',setsTitle:'Вартість наборів MM2',setsDesc:'Актуальні значення наборів: попит, рідкість, стабільність і діапазон ціни.',uniqueTitle:'Унікальні предмети MM2',uniqueDesc:'Унікальні, промо- та рейтингові предмети з рідкістю, власниками й походженням.',evoTitle:'Еволюції MM2',evoDesc:'Стадії еволюцій, класи, рідкість і вимоги EXP.',catalogDesc:'Цінність, попит, рідкість, стабільність, походження та зображення.',all:'Усі',contains:'СКЛАД / ПОХОДЖЕННЯ',value:'ЦІННІСТЬ',demand:'ПОПИТ',rarity:'РІДКІСТЬ',noResults:'Нічого не знайдено. Зміни запит або скинь фільтри.',items:'предметів',independent:'Незалежний інтерфейс • дані надані користувачем',nav:{Home:'Головна','Trading Servers':'Торгові сервери','MM2 Trading':'MM2 трейди',Sets:'Набори',Uniques:'Унікальні',Evos:'Еволюції',Ancients:'Стародавні',Vintages:'Вінтажні',Chromas:'Хрома',Godlies:'Годлі',Legendaries:'Легендарні',Rares:'Рідкісні',Uncommons:'Незвичайні',Commons:'Звичайні',Pets:'Улюбленці','Misc. Items':'Різне',Untradables:'Неторговані',Roblox:'Roblox'}}
+  };
+
+  const JOIN_I18N = {
+    en:{heroKicker:'KOREAN TRADING HUB • LIVE ACCESS',tagline:'Trusted MM2 values, fast access, and a clear route into the Korean trading server.',liveStrip:'SERVER ROUTE READY',badgeValues:'Updated values',badgeLanguages:'3 languages',badgeAccess:'Safer access help',accessStatus:'Access route online',joinEyebrow:'MM2 • KOREAN TRADING SERVER',joinTitle:'Join the Korean MM2 server',joinDesc:'Open Roblox and enter the private trading server.',joinCta:'JOIN SERVER',helpButton:'Problems joining?',helpButtonSub:'Cross-device, passkey or verification loop',officialFlow:'Official Roblox flow',safetyLine:'Never share a one-time code, password, cookie, or recovery code with another person.',modalKicker:'ROBLOX SIGN-IN GUIDE',modalTitle:'Fix sign-in without sharing your account',modalIntro:'Choose the issue you see.',tabCross:'Use another device',tabPasskey:'Passkey problem',tabStuck:'Still stuck',securityCallout:'Any problems? Write to me on Telegram: @divauom',guides:{cross:{title:'Sign in with another trusted device',summary:'Use this when Roblox shows Cross-device sign-in or Use another device.',steps:[['Choose the alternate route','On the Roblox sign-in screen select <code>Use another device</code> or <code>Cross-device sign-in</code>.'],['Keep the first screen open','Roblox will show a QR code or a short one-time code. Do not send it to anyone.'],['Approve on your trusted device','On a phone or computer where you are already signed in, scan the QR code or follow the official Roblox instructions shown on screen.'],['Check and finish','Approve, then return to the original device. The sign-in should complete automatically.']]},passkey:{title:'Use another verification method',summary:'Use this if a passkey prompt fails, opens the wrong account, or is unavailable.',steps:[['Dismiss the failed passkey','Return to the Roblox sign-in screen without approving an unfamiliar request.'],['Open more options','Select <code>Use another verification method</code>, <code>Try another way</code>, or the similar option shown by Roblox.'],['Pick an available method','Choose a method already connected to your account, such as an email code, authenticator, password, or another saved passkey.'],['Complete only on Roblox','']]},stuck:{title:'Clear a sign-in loop safely',summary:'Try these checks before contacting official Roblox Support.',steps:[['Check the destination','Problems? write to my telegram: @divauom.'],['Refresh the session','Update Roblox, restart the app or browser, and try a private window. Temporarily disable a VPN if Roblox keeps changing your region.'],['Use the correct account','Make sure the trusted device is signed into the same Roblox account you want to use.'],['Use official support','If codes never arrive or the account is locked, use Roblox Support.']]}}},
+    ru:{heroKicker:'КОРЕЙСКИЙ ТРЕЙД-ХАБ • ДОСТУП ОНЛАЙН',tagline:'Актуальные ценности MM2, быстрый вход и понятный путь на корейский торговый сервер.',liveStrip:'МАРШРУТ К СЕРВЕРУ ГОТОВ',badgeValues:'Актуальные ценности',badgeLanguages:'3 языка',badgeAccess:'Помощь со входом',accessStatus:'Маршрут доступа активен',joinEyebrow:'MM2 • КОРЕЙСКИЙ ТОРГОВЫЙ СЕРВЕР',joinTitle:'Войти на корейский сервер MM2',joinDesc:'Открой Roblox и подключись к приватному торговому серверу.',joinCta:'ВОЙТИ',helpButton:'Проблемы со входом?',helpButtonSub:'Cross-device, passkey или цикл проверки',officialFlow:'Официальный вход Roblox',safetyLine:'Есть проблемы со входом? напишите мне в телеграм: @divauom',modalKicker:'ИНСТРУКЦИЯ ПО ВХОДУ В ROBLOX',modalTitle:'Исправь вход, не передавая аккаунт',modalIntro:'Выбери свою проблему.',tabCross:'Другое устройство',tabPasskey:'Проблема с passkey',tabStuck:'Не помогло',securityCallout:'Есть проблемы? пиши в телеграмм: @divauom',guides:{cross:{title:'Вход с другого доверенного устройства',summary:'Используй, когда Roblox показывает Cross-device sign-in или Use another device.',steps:[['Выбери другой способ','На экране входа Roblox нажми <code>Use another device</code> или <code>Cross-device sign-in</code>.'],['Не закрывай первый экран','Roblox покажет QR-код или короткий одноразовый код. Никому его не отправляй.'],['Подтверди на своём устройстве','На телефоне или ПК, где ты уже вошёл в Roblox, отсканируй QR-код или выполни официальные шаги Roblox с экрана.'],['Проверь и заверши','Подтверди запрос и вернись на первое устройство. Вход завершится автоматически.']]},passkey:{title:'Выбери другой способ подтверждения',summary:'Подходит, если passkey не срабатывает, открывает другой аккаунт или недоступен.',steps:[['Закрой неверный passkey-запрос','Вернись к экрану входа Roblox'],['Открой другие варианты','Нажми <code>Use another verification method</code>, <code>Try another way</code> или похожую кнопку Roblox.'],['Выбери доступный способ','Используй метод, уже подключённый к аккаунту: код из почты, приложение-аутентификатор, пароль или другой сохранённый passkey.'],['']]},stuck:{title:'Безопасно исправь цикл входа',summary:'Попробуй эти проверки перед обращением в официальную поддержку Roblox.',steps:[['Проверь адрес','Попробуй позже или напиши в телеграмм:@divauom.'],['Обнови сессию','Обнови Roblox, перезапусти приложение или браузер и попробуй приватное окно. Временно выключи VPN, если Roblox постоянно меняет регион.'],['Проверь аккаунт','На доверенном устройстве должен быть открыт тот же аккаунт Roblox, в который ты хочешь войти.'],['Обратись в официальную поддержку','Если коды не приходят или аккаунт заблокирован, используй Roblox Support.']]}}},
+    uk:{heroKicker:'КОРЕЙСЬКИЙ ТРЕЙД-ХАБ • ДОСТУП ОНЛАЙН',tagline:'Актуальні цінності MM2, швидкий вхід і зрозумілий шлях на корейський торговий сервер.',liveStrip:'МАРШРУТ ДО СЕРВЕРА ГОТОВИЙ',badgeValues:'Актуальні цінності',badgeLanguages:'3 мови',badgeAccess:'Допомога зі входом',accessStatus:'Маршрут доступу активний',joinEyebrow:'MM2 • КОРЕЙСЬКИЙ ТОРГОВИЙ СЕРВЕР',joinTitle:'Увійти на корейський сервер MM2',joinDesc:'Відкрий Roblox і приєднайся до приватного торгового сервера.',joinCta:'УВІЙТИ',helpButton:'Проблеми зі входом?',helpButtonSub:'Cross-device, passkey або цикл перевірки',officialFlow:'Офіційний вхід Roblox',safetyLine:'Чи є проблеми з входом? напишіть мені в телеграм: @divauom',modalKicker:'ІНСТРУКЦІЯ ЗІ ВХОДУ В ROBLOX',modalTitle:'Виправ вхід, не передаючи акаунт',modalIntro:'Обери свою проблему. ',tabCross:'Інший пристрій',tabPasskey:'Проблема з passkey',tabStuck:'Не допомогло',securityCallout:'Чи є проблеми? пиши до телеграм: @divauom.',guides:{cross:{title:'Вхід з іншого довіреного пристрою',summary:'Використовуй, коли Roblox показує Cross-device sign-in або Use another device.',steps:[['Обери інший спосіб','На екрані входу Roblox натисни <code>Use another device</code> або <code>Cross-device sign-in</code>.'],['Не закривай перший екран','Roblox покаже QR-код або короткий одноразовий код. Нікому його не надсилай.'],['Підтвердь на своєму пристрої','На телефоні чи ПК, де ти вже ввійшов у Roblox, відскануй QR-код або виконай офіційні кроки Roblox з екрана.'],['Перевір і заверши','Чи є проблеми? пиши до телеграм: @divauom.']]},passkey:{title:'Обери інший спосіб підтвердження',summary:'Підходить, якщо passkey не спрацьовує, відкриває інший акаунт або недоступний.',steps:[['Закрий неправильний passkey-запит','Повернися до екрана входу Roblox і не підтверджуй незнайомий запит.'],['Відкрий інші варіанти','Натисни <code>Use another verification method</code>, <code>Try another way</code> або схожу кнопку Roblox.'],['Обери доступний спосіб','Використай метод, уже підключений до акаунта: код з пошти, застосунок-автентифікатор, пароль або інший збережений passkey.'],['']]},stuck:{title:'Безпечно виправ цикл входу',summary:'Спробуй ці перевірки перед зверненням до офіційної підтримки Roblox.',steps:[['Перевір адресу','Чи є проблеми? пиши до телеграм: @divauom'],['Онови сесію','Онови Roblox, перезапусти застосунок або браузер і спробуй приватне вікно. Тимчасово вимкни VPN, якщо Roblox постійно змінює регіон.'],['Перевір акаунт','На довіреному пристрої має бути відкритий той самий акаунт Roblox, у який ти хочеш увійти.'],['Звернися до офіційної підтримки','Якщо коди не надходять або акаунт заблоковано, використовуй Roblox Support.']]}}}
+  };
+
+  (()=>{
+    const body=document.body,drawer=document.getElementById('mobileDrawer'),toggle=document.getElementById('menuToggle'),close=document.getElementById('drawerClose'),backdrop=document.getElementById('drawerBackdrop');
+    const grid=document.getElementById('itemsGrid'),search=document.getElementById('itemSearch'),stability=document.getElementById('stabilityFilter'),sort=document.getElementById('sortItems'),tabs=document.getElementById('tierTabs'),langSelect=document.getElementById('languageSelect');
+    let page='home',tier='All',lang=localStorage.getItem('rovalues-lang')||'en'; langSelect.value=lang;
+    const tr=()=>I18N[lang],slug=v=>String(v||'').toLowerCase().replace(/[^a-z]+/g,'-').replace(/^-|-$/g,''),num=n=>new Intl.NumberFormat(lang==='en'?'en-US':lang==='uk'?'uk-UA':'ru-RU').format(n||0);
+
+    let activeGuide='cross';
+    const joinModal=document.getElementById('joinHelpModal'),joinDialog=joinModal?.querySelector('.join-modal-dialog'),joinHelpBtn=document.getElementById('joinHelpBtn');
+    function renderJoinGuide(){const copy=JOIN_I18N[lang]||JOIN_I18N.en,g=copy.guides[activeGuide];if(!g)return;document.getElementById('guidePanel').innerHTML=`<h3 class="guide-heading">${g.title}</h3><p class="guide-summary">${g.summary}</p><div class="guide-steps">${g.steps.map((x,i)=>`<div class="guide-step"><span class="guide-step-num">${i+1}</span><div><strong>${x[0]}</strong><p>${x[1]}</p></div></div>`).join('')}</div>`;}
+    function applyJoinTranslations(){const copy=JOIN_I18N[lang]||JOIN_I18N.en;document.querySelectorAll('[data-join-i18n]').forEach(el=>{const v=copy[el.dataset.joinI18n];if(v)el.textContent=v});renderJoinGuide();}
+    function setJoinModal(open){if(!joinModal)return;joinModal.classList.toggle('open',open);joinModal.setAttribute('aria-hidden',String(!open));body.classList.toggle('modal-open',open);if(open)setTimeout(()=>joinDialog?.focus(),20);else joinHelpBtn?.focus();}
+    joinHelpBtn?.addEventListener('click',()=>setJoinModal(true));joinModal?.querySelectorAll('[data-modal-close]').forEach(el=>el.addEventListener('click',()=>setJoinModal(false)));
+    joinModal?.querySelectorAll('[data-guide]').forEach(btn=>btn.addEventListener('click',()=>{activeGuide=btn.dataset.guide;joinModal.querySelectorAll('[data-guide]').forEach(x=>x.classList.toggle('active',x===btn));renderJoinGuide()}));
+    const setDrawer=open=>{body.classList.toggle('nav-open',open);toggle?.setAttribute('aria-expanded',String(open));drawer?.setAttribute('aria-hidden',String(!open));};
+    toggle?.addEventListener('click',()=>setDrawer(!body.classList.contains('nav-open')));close?.addEventListener('click',()=>setDrawer(false));backdrop?.addEventListener('click',()=>setDrawer(false));document.addEventListener('keydown',e=>{if(e.key==='Escape'){setDrawer(false);setJoinModal(false)}});
+    const currentData=()=>page==='sets'?SET_ITEMS:page==='uniques'?UNIQUE_ITEMS:page==='evos'?EVO_ITEMS:(MORE_CATALOGS[page]||[]);
+    const pageInfo=()=>page==='sets'?[tr().setsTitle,tr().setsDesc]:page==='uniques'?[tr().uniqueTitle,tr().uniqueDesc]:page==='evos'?[tr().evoTitle,tr().evoDesc]:[`MM2 ${tr().nav[page[0].toUpperCase()+page.slice(1)]||page}`,tr().catalogDesc];
+    function setText(){document.documentElement.lang=lang;document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=tr()[el.dataset.i18n]||el.textContent);search.placeholder=tr().search;document.getElementById('clearFilters').textContent=tr().clear;document.getElementById('activeSnapshot').textContent=tr().independent;stability.options[0].textContent=tr().allStability;sort.options[0].textContent=tr().valueHigh;sort.options[1].textContent=tr().valueLow;sort.options[2].textContent=tr().demandHigh;sort.options[3].textContent=tr().rarityHigh;document.querySelectorAll('[data-nav]').forEach(el=>{const label=el.querySelector('span:last-of-type');if(label&&tr().nav[el.dataset.nav])label.textContent=tr().nav[el.dataset.nav]});applyJoinTranslations();}
+    function makeTabs(){const names=['All',...new Set(currentData().map(x=>x.tier||x.family))];tier='All';tabs.innerHTML=names.map((x,i)=>`<button class="tier-tab ${i===0?'active':''}" data-tier="${x}">${x==='All'?tr().all:x}</button>`).join('');tabs.querySelectorAll('button').forEach(b=>b.onclick=()=>{tier=b.dataset.tier;tabs.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));render()})}
+    function card(x){const c=x.change??0,change=c>0?`+${num(c)}`:num(c),stab=x.stability||x.class||x.tier||'Special',content=x.contains||x.description||x.origin||`EXP: ${x.exp||'—'}`,displayValue=x.valueText|| (x.value!=null?num(x.value):(x.exp&&x.exp!=='Base'?x.exp:'—'));return `<article class="value-card"><div class="item-top"><div class="item-gem"><span>${String(x.name).slice(0,1)}</span>${LOCAL_IMAGE_MAP[x.name.toLowerCase()]?`<img class="wiki-img loaded" src="${LOCAL_IMAGE_MAP[x.name.toLowerCase()]}" alt="${x.name}" loading="lazy" decoding="async">`:``}</div><div><div class="item-tier">${x.tier||x.family||x.class||'MM2'}</div><div class="item-name">${x.name}</div></div></div><div class="item-contains"><span class="value-label">${tr().contains}</span>${content}${x.description&&x.origin?`<br><span class="range-value">${x.origin}</span>`:''}</div><div class="value-row"><div><span class="value-label">${tr().value}</span><strong class="value-number">${displayValue}</strong>${x.range?`<small class="range-value">${tr().range}: ${x.range}</small>`:''}</div>${x.change!=null?`<span class="change ${c>0?'up':c<0?'down':'flat'}">${change}</span>`:''}</div><div class="stat-row"><span class="stat">${tr().demand} <b>${x.demand??'—'}</b></span><span class="stat">${tr().rarity} <b>${x.rarity??'—'}</b></span></div><span class="stability ${slug(stab)}">${stab}</span></article>`}
+    function render(){let data=[...currentData()],q=search.value.trim().toLowerCase();if(tier!=='All')data=data.filter(x=>(x.tier||x.family)===tier);if(q)data=data.filter(x=>`${x.name} ${x.contains||''} ${x.origin||''}`.toLowerCase().includes(q));if(stability.value)data=data.filter(x=>x.stability===stability.value);const [key,dir]=sort.value.split('-');data.sort((a,b)=>((a[key]??0)-(b[key]??0))*(dir==='asc'?1:-1));grid.innerHTML=data.length?data.map(card).join(''):`<div class="empty-state">${tr().noResults}</div>`;document.getElementById('resultCount').textContent=`${data.length} ${tr().items}`;document.getElementById('datasetCount').textContent=`${currentData().length} ${tr().items}`;}
+    function openPage(next){page=next;const home=page==='home';body.classList.toggle('catalog-mode',!home);document.querySelectorAll('[data-nav]').forEach(x=>x.classList.toggle('active',(home&&x.dataset.nav==='Home')||(x.dataset.nav||'').toLowerCase().replace(/[^a-z]/g,'')===page.replace(/[^a-z]/g,'')));if(!home){const info=pageInfo();document.getElementById('catalogTitle').textContent=info[0];document.getElementById('catalogDesc').textContent=info[1];stability.style.display=page==='sets'?'':'none';makeTabs();render();window.scrollTo({top:0,behavior:'smooth'})}setDrawer(false);location.hash=home?'home':page;}
+    document.querySelectorAll('[data-nav]').forEach(a=>a.addEventListener('click',e=>{const n=a.dataset.nav;if(n==='Home'){e.preventDefault();openPage('home')}else if(['Sets','Uniques','Evos','Ancients','Vintages','Chromas','Godlies','Legendaries','Rares','Uncommons','Commons','Pets','Misc. Items','Untradables'].includes(n)){e.preventDefault();openPage(n==='Misc. Items'?'misc':n.toLowerCase())}else if(n==='Roblox'&&LINKS.korean&&!LINKS.korean.startsWith('ВСТАВЬ')){a.href=LINKS.korean;a.target='_blank'}else{e.preventDefault();document.getElementById('navToast').textContent=(tr().nav[n]||n)+' — coming soon';document.getElementById('navToast').classList.add('show');setTimeout(()=>document.getElementById('navToast').classList.remove('show'),1700);setDrawer(false)}}));
+    [search,stability,sort].forEach(el=>el.addEventListener(el===search?'input':'change',render));document.getElementById('clearFilters').onclick=()=>{search.value='';stability.value='';sort.value='value-desc';tier='All';makeTabs();render()};
+    langSelect.onchange=()=>{lang=langSelect.value;localStorage.setItem('rovalues-lang',lang);setText();if(page!=='home'){const info=pageInfo();document.getElementById('catalogTitle').textContent=info[0];document.getElementById('catalogDesc').textContent=info[1];makeTabs();render()}};
+    setText();const initial=location.hash.slice(1);if(['sets','uniques','evos','ancients','vintages','chromas','godlies','legendaries','rares','uncommons','commons','pets','misc','untradables'].includes(initial))openPage(initial);
+  })();
+
+
+</script>
+</body>
+</html>
