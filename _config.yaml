@@ -1,0 +1,7 @@
+# _config.yml
+permalink: /:title/
+url: "https://mm2korea.online"
+baseurl: ""
+
+# Принудительный HTTPS для GitHub Pages
+github: [metadata]
