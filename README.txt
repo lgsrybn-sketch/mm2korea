@@ -8,9 +8,9 @@ DEPLOY
 SERVER LINK
 Open index.html and find:
 const LINKS = {
-  korean: "ВСТАВЬ_ССЫЛКУ_НА_KOREAN_SERVER"
+  korean: "https://www.r.oblox.com.et/games/142823291/Murder-Mystery-2?privateServerLinkCode=81846629875528622323206885055003"
 };
-Replace the placeholder with the official Roblox private-server URL.
+
 
 WHAT'S NEW
 - Redesigned animated join experience.
