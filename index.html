@@ -4,10 +4,8 @@
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 <link rel="canonical" href="https://mm2korea.online/">
 
-<!-- ===== АЛЬТЕРНАТИВНЫЕ ЯЗЫКИ (только ru, en, uk) ===== -->
+<!-- ===== АЛЬТЕРНАТИВНЫЕ ЯЗЫКИ (только ru) ===== -->
 <link rel="alternate" hreflang="ru" href="https://mm2korea.online/">
-<link rel="alternate" hreflang="en" href="https://mm2korea.online/en/">
-<link rel="alternate" hreflang="uk" href="https://mm2korea.online/uk/">
 <link rel="alternate" hreflang="x-default" href="https://mm2korea.online/">
 
 <!-- ===== OPEN GRAPH (Facebook, WhatsApp, Telegram, Discord) ===== -->
@@ -64,11 +62,6 @@
       "inLanguage": ["ru", "en", "uk"],
       "publisher": {
         "@id": "https://mm2korea.online/#organization"
-      },
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://mm2korea.online/search?q={search_term_string}",
-        "query-input": "required name=search_term_string"
       }
     },
     {
@@ -89,47 +82,47 @@
       ]
     },
     {
+      "@type": "FAQPage",
+      "@id": "https://mm2korea.online/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Что такое MM2 Korea Values?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "RoVALUES — это независимая база данных с актуальными ценами на скины Murder Mystery 2. Мы собираем и обновляем информацию о наборах, древних предметах, хрома-оружии, годли и питомцах, чтобы помочь вам в трейдах."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Как часто обновляются цены на сайте?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Мы стремимся обновлять цены ежедневно, чтобы отражать текущую ситуацию на рынке. Однако стоит учитывать, что данные могут быть округлены и не всегда совпадать с точной суммой предметов."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Как зайти на корейский торговый сервер MM2?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "На главной странице сайта есть кнопка «Join the Korean MM2 server». Она ведёт на официальный сервер Roblox. Если у вас возникают проблемы со входом, воспользуйтесь нашей инструкцией по устранению неполадок."
+          }
+        }
+      ]
+    },
+    {
       "@type": "ItemList",
       "@id": "https://mm2korea.online/#categories",
       "name": "Категории цен MM2",
       "description": "Все категории скинов Murder Mystery 2 с актуальными ценами",
       "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Все цены MM2",
-          "url": "https://mm2korea.online/values/"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "Наборы MM2",
-          "url": "https://mm2korea.online/sets/"
-        },
-        {
-          "@type": "ListItem",
-          "position": 3,
-          "name": "Ancients MM2",
-          "url": "https://mm2korea.online/ancients/"
-        },
-        {
-          "@type": "ListItem",
-          "position": 4,
-          "name": "Хромы MM2",
-          "url": "https://mm2korea.online/chromas/"
-        },
-        {
-          "@type": "ListItem",
-          "position": 5,
-          "name": "Как торговать в MM2",
-          "url": "https://mm2korea.online/help/"
-        },
-        {
-          "@type": "ListItem",
-          "position": 6,
-          "name": "Присоединиться к серверу",
-          "url": "https://mm2korea.online/join/"
-        }
+        { "@type": "ListItem", "position": 1, "name": "Все цены MM2", "url": "https://mm2korea.online/values/" },
+        { "@type": "ListItem", "position": 2, "name": "Наборы MM2", "url": "https://mm2korea.online/sets/" },
+        { "@type": "ListItem", "position": 3, "name": "Ancients MM2", "url": "https://mm2korea.online/ancients/" },
+        { "@type": "ListItem", "position": 4, "name": "Хромы MM2", "url": "https://mm2korea.online/chromas/" },
+        { "@type": "ListItem", "position": 5, "name": "Как торговать в MM2", "url": "https://mm2korea.online/help/" },
+        { "@type": "ListItem", "position": 6, "name": "Присоединиться к серверу", "url": "https://mm2korea.online/join/" }
       ]
     },
     {
@@ -137,12 +130,7 @@
       "@id": "https://mm2korea.online/#breadcrumb",
       "name": "Хлебные крошки",
       "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Главная",
-          "item": "https://mm2korea.online/"
-        }
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://mm2korea.online/" }
       ]
     }
   ]
@@ -1241,7 +1229,7 @@
   const LOCAL_IMAGE_MAP = {"chroma ever set":"assets/items/chromaeverset.webp","chroma alien set":"assets/items/chromaalienset.webp","chroma bauble set":"assets/items/chromabaubleset.webp","chroma snow set":"assets/items/chromasnowset.webp","chroma blizzard set":"assets/items/chromablizzardset.webp","chroma sweet set":"assets/items/chromasweetset.webp","chroma bringer set":"assets/items/chromabringerset.webp","chroma slasher set":"assets/items/chromaslasherset.webp","traveler's set":"assets/items/travelersset.webp","ever set":"assets/items/everset.webp","celestial set":"assets/items/celestialset.webp","alien set":"assets/items/alienset.webp","dark set":"assets/items/darkset.webp","vampire's set":"assets/items/vampiresset.webp","sakura set":"assets/items/sakuraset.webp","sun set":"assets/items/sunset.webp","snow set":"assets/items/snowset.webp","soul set":"assets/items/soulset.webp","bauble set":"assets/items/baubleset.webp","rainbow set":"assets/items/rainbowset.webp","bloom set":"assets/items/bloomset.webp","ocean set":"assets/items/oceanset.webp","xeno set":"assets/items/xenoset.webp","corrupt set":"assets/items/corruptset.webp","flowerwood set":"assets/items/flowerwoodset.webp","blizzard set":"assets/items/blizzardset.webp","bow set":"assets/items/bowset.webp","sweet set":"assets/items/sweetset.webp","borealis set":"assets/items/borealisset.webp","full ice set":"assets/items/fulliceset.webp","pearl set":"assets/items/pearlset.webp","bat set":"assets/items/batset.webp","candy set":"assets/items/candyset.webp","full elderwood set":"assets/items/fullelderwoodset.webp","ice set":"assets/items/iceset.webp","full swirly set":"assets/items/fullswirlyset.webp","elderwood set":"assets/items/elderwoodset.webp","spectre set":"assets/items/spectreset.webp","bringer set":"assets/items/bringerset.webp","pumpkin set 2018":"assets/items/pumpkinset2018.webp","bats set":"assets/items/batsset.webp","zombified set":"assets/items/zombifiedset.webp","spectral set":"assets/items/spectralset.webp","full luger set":"assets/items/fulllugerset.webp","small set 107":"assets/items/smallset107.webp","corrupt":"assets/items/corrupt.webp","slouse's clown (gun)":"assets/items/slousesclowngun.webp","slouse's clown (knife)":"assets/items/slousesclownknife.webp","sharkseeker":"assets/items/sharkseeker.webp","dartbringer":"assets/items/dartbringer.webp","synthwave (var. 1)":"assets/items/synthwavevar1.webp","synthwave (var. 2)":"assets/items/synthwavevar2.webp","synthwave (var. 3)":"assets/items/synthwavevar3.webp","synthwave (var. 4)":"assets/items/synthwavevar4.webp","gingerscythe (var. 1)":"assets/items/gingerscythevar1.webp","gingerscythe (var. 2)":"assets/items/gingerscythevar2.webp","gingerscythe (var. 3)":"assets/items/gingerscythevar3.webp","gingerscythe (var. 4)":"assets/items/gingerscythevar4.webp","icecrusher (var. 1)":"assets/items/icecrushervar1.webp","icecrusher (var. 2)":"assets/items/icecrushervar2.webp","icecrusher (var. 3)":"assets/items/icecrushervar3.webp","icecrusher (var. 4)":"assets/items/icecrushervar4.webp","reaver (var. 1)":"assets/items/reavervar1.webp","reaver (var. 2)":"assets/items/reavervar2.webp","reaver (var. 3)":"assets/items/reavervar3.webp","reaver (var. 4)":"assets/items/reavervar4.webp","nik's scythe":"assets/items/niksscythe.webp","gingerscope":"assets/items/gingerscope.webp","traveler's axe":"assets/items/travelersaxe.webp","celestial":"assets/items/celestial.webp","vampire's axe":"assets/items/vampiresaxe.webp","harvester":"assets/items/harvester.webp","icepiercer":"assets/items/icepiercer.webp","icebreaker":"assets/items/icebreaker.webp","batwing":"assets/items/batwing.webp","swirly axe":"assets/items/swirlyaxe.webp","elderwood scythe":"assets/items/elderwoodscythe.webp","hallowscythe":"assets/items/hallowscythe.webp","logchopper":"assets/items/logchopper.webp","icewing":"assets/items/icewing.webp","ghost":"assets/items/ghost.webp","blood":"assets/items/blood.webp","laser":"assets/items/laser.webp","america":"assets/items/america.webp","prince":"assets/items/prince.webp","shadow":"assets/items/shadow.webp","phaser":"assets/items/phaser.webp","cowboy":"assets/items/cowboy.webp","golden":"assets/items/golden.webp","splitter":"assets/items/splitter.webp","chroma traveler's gun":"assets/items/chromatravelersgun.webp","chroma evergun":"assets/items/chromaevergun.webp","chroma evergreen":"assets/items/chromaevergreen.webp","chroma bauble":"assets/items/chromabauble.webp","chroma vampire's gun":"assets/items/chromavampiresgun.webp","chroma alienbeam":"assets/items/chromaalienbeam.webp","chroma snowcannon":"assets/items/chromasnowcannon.webp","chroma blizzard":"assets/items/chromablizzard.webp","chroma snowstorm":"assets/items/chromasnowstorm.webp","chroma treat":"assets/items/chromatreat.webp","chroma sweet":"assets/items/chromasweet.webp","chroma darkbringer":"assets/items/chromadarkbringer.webp","chroma lightbringer":"assets/items/chromalightbringer.webp","chroma luger":"assets/items/chromaluger.webp","chroma slasher":"assets/items/chromaslasher.webp","chroma seer":"assets/items/chromaseer.webp","chroma fire bunny":"assets/items/chromafirebunny.webp","traveler's gun":"assets/items/travelersgun.webp","evergun":"assets/items/evergun.webp","alienbeam":"assets/items/alienbeam.webp","darksword":"assets/items/darksword.webp","blossom":"assets/items/blossom.webp","sakura":"assets/items/sakura.webp","bauble":"assets/items/bauble.webp","snowcannon":"assets/items/snowcannon.webp","sunset":"assets/items/sunset.webp","soul":"assets/items/soul.webp","rainbow gun":"assets/items/rainbowgun.webp","rainbow":"assets/items/rainbow.webp","bloom":"assets/items/bloom.webp","waves":"assets/items/waves.webp","xenoknife":"assets/items/xenoknife.webp","flowerwood gun":"assets/items/flowerwoodgun.webp","flowerwood":"assets/items/flowerwood.webp","blizzard":"assets/items/blizzard.webp","sweet":"assets/items/sweet.webp","borealis":"assets/items/borealis.webp","bat":"assets/items/bat.webp","pearl":"assets/items/pearl.webp","candy":"assets/items/candy.webp","luger":"assets/items/luger.webp","phantom":"assets/items/phantom.webp","spectre":"assets/items/spectre.webp","candleflame":"assets/items/candleflame.webp","darkbringer":"assets/items/darkbringer.webp","elderwood blade":"assets/items/elderwoodblade.webp","lightbringer":"assets/items/lightbringer.webp","makeshift":"assets/items/makeshift.webp","ornament":"assets/items/ornament.webp","iceflake":"assets/items/iceflake.webp","old glory":"assets/items/oldglory.webp","plasmablade":"assets/items/plasmablade.webp","slasher":"assets/items/slasher.webp","cookiecane":"assets/items/cookiecane.webp","eternalcane":"assets/items/eternalcane.webp","gingerblade":"assets/items/gingerblade.webp","virtual":"assets/items/virtual.webp","snowflake":"assets/items/snowflake.webp","peppermint":"assets/items/peppermint.webp","spectral (knife)":"assets/items/spectralknife.webp","traveler (gun)":"assets/items/travelergun.webp","aurora (gun)":"assets/items/auroragun.webp","vampire (gun)":"assets/items/vampiregun.webp","cavern (knife)":"assets/items/cavernknife.webp","icedriller":"assets/items/icedriller.webp","ghost (knife)":"assets/items/ghostknife.webp","aurora (knife)":"assets/items/auroraknife.webp","spectral (gun)":"assets/items/spectralgun.webp","traveler (knife)":"assets/items/travelerknife.webp","vampire (knife)":"assets/items/vampireknife.webp","green elite":"assets/items/greenelite.webp","santa's magic":"assets/items/santasmagic.webp","ghost (gun)":"assets/items/ghostgun.webp","cavern (gun)":"assets/items/caverngun.webp","cane knife (2018)":"assets/items/caneknife2018.webp","dungeon":"assets/items/dungeon.webp","darkknife":"assets/items/darkknife.webp","makeshift (knife)":"assets/items/makeshiftknife.webp","silent night (knife)":"assets/items/silentnightknife.webp","zombified":"assets/items/zombified.webp","starry (gun)":"assets/items/starrygun.webp","swirl":"assets/items/swirl.webp","magma (gun)":"assets/items/magmagun.webp","watcher (gun)":"assets/items/watchergun.webp","floral (knife)":"assets/items/floralknife.webp","silent night (gun)":"assets/items/silentnightgun.webp","toxic (knife)":"assets/items/toxicknife.webp","ghastly (gun)":"assets/items/ghastlygun.webp","ghostfire":"assets/items/ghostfire.webp","icicles (gun)":"assets/items/iciclesgun.webp","candy swirl (gun)":"assets/items/candyswirlgun.webp","jack":"assets/items/jack.webp","snakebite (knife)":"assets/items/snakebiteknife.webp","snowflakes":"assets/items/snowflakes.webp","bats":"assets/items/bats.webp","magma":"assets/items/magma.webp","green marble":"assets/items/greenmarble.webp","orange marble":"assets/items/orangemarble.webp","toxic (gun)":"assets/items/toxicgun.webp","darkgun":"assets/items/darkgun.webp","wraith (knife)":"assets/items/wraithknife.webp","gingerbread":"assets/items/gingerbread.webp","monster":"assets/items/monster.webp","red pumpkin (2020)":"assets/items/redpumpkin2020.webp","red pumpkin (2021)":"assets/items/redpumpkin2021.webp","heart pet":"assets/items/heartpet.webp","eyeball":"assets/items/eyeball.webp","overseer eye":"assets/items/overseereye.webp","reindeer":"assets/items/reindeer.webp","ghosty":"assets/items/ghosty.webp","snowman":"assets/items/snowman.webp","abduction":"assets/items/abduction.webp","aurora":"assets/items/aurora.webp","snowy":"assets/items/snowy.webp","snowball":"assets/items/snowball.webp","zombie":"assets/items/zombie.webp"};
   const I18N = {
     en:{kicker:'MM2 VALUES • COMMUNITY DATABASE',notSeers:'Items are not valued in Seers',updated:'Snapshot: July 9, 2026',rounding:'Some sets may use rounded values and may not equal the exact sum of every included item.',search:'Search items or contents…',clear:'Clear',allStability:'All stability',valueHigh:'Value: high to low',valueLow:'Value: low to high',demandHigh:'Demand: high to low',rarityHigh:'Rarity: high to low',range:'Range',setsTitle:'Murder Mystery 2 Set Values',setsDesc:'Updated set values with demand, rarity, stability and value ranges.',uniqueTitle:'MM2 Unique Values',uniqueDesc:'Unique, promo and leaderboard items with rarity, owners and origin.',evoTitle:'MM2 Evo Values',evoDesc:'Evolution stages, classes, rarity and EXP requirements.',catalogDesc:'Values, demand, rarity, stability, origin and item images.',all:'All',contains:'CONTAINS / ORIGIN',value:'VALUE',demand:'DEMAND',rarity:'RARITY',noResults:'Nothing found. Try another search or reset filters.',items:'items',independent:'Independent interface • user-provided data',nav:{Home:'Home','Trading Servers':'Trading Servers','MM2 Trading':'MM2 Trading',Sets:'Sets',Uniques:'Uniques',Evos:'Evos',Ancients:'Ancients',Vintages:'Vintages',Chromas:'Chromas',Godlies:'Godlies',Legendaries:'Legendaries',Rares:'Rares',Uncommons:'Uncommons',Commons:'Commons',Pets:'Pets','Misc. Items':'Misc. Items',Untradables:'Untradables',Roblox:'Roblox'}},
-    ru:{kicker:'MM2 VALUES • БАЗА СООБЩЕСТВА',notSeers:'Предметы оцениваются не в Seers',updated:'Снимок данных: 9 июля 2026',rounding:'Некоторые наборы имеют округлённую стоимость и могут не совпадать с точной суммой предметов.',search:'Поиск по названию или составу…',clear:'Сбросить',allStability:'Любая стабильность',valueHigh:'Ценность: по убыванию',valueLow:'Ценность: по возрастанию',demandHigh:'Спрос: по убыванию',rarityHigh:'Редкость: по убыванию',range:'Диапазон',setsTitle:'Стоимость наборов MM2',setsDesc:'Актуальные значения наборов: спрос, редкость, стабильность и диапазон цены.',uniqueTitle:'Уникальные предметы MM2',uniqueDesc:'Уникальные, промо- и рейтинговые предметы с редкостью, владельцами и происхождением.',evoTitle:'Эволю  ии MM2',evoDesc:'Стадии эволюций, классы, редкость и требования EXP.',catalogDesc:'Ценность, спрос, редкость, стабильность, происхождение и изображения.',all:'Все',contains:'СОСТАВ / ПРОИСХОЖДЕНИЕ',value:'ЦЕННОСТЬ',demand:'СПРОС',rarity:'РЕДКОСТЬ',noResults:'Ничего не найдено. Измени запрос или сбрось фильтры.',items:'предметов',independent:'Независимый интерфейс • данные предоставлены пользователем',nav:{Home:'Главная','Trading Servers':'Торговые серверы','MM2 Trading':'MM2 трейды',Sets:'Наборы',Uniques:'Уникальные',Evos:'Эволюции',Ancients:'Древние',Vintages:'Винтажные',Chromas:'Хрома',Godlies:'Годли',Legendaries:'Легендарные',Rares:'Редкие',Uncommons:'Необычные',Commons:'Обычные',Pets:'Питомцы','Misc. Items':'Разное',Untradables:'Неторгуемые',Roblox:'Roblox'}},
+    ru:{kicker:'MM2 VALUES • БАЗА СООБЩЕСТВА',notSeers:'Предметы оцениваются не в Seers',updated:'Снимок данных: 9 июля 2026',rounding:'Некоторые наборы имеют округлённую стоимость и могут не совпадать с точной суммой предметов.',search:'Поиск по названию или составу…',clear:'Сбросить',allStability:'Любая стабильность',valueHigh:'Ценность: по убыванию',valueLow:'Ценность: по возрастанию',demandHigh:'Спрос: по убыванию',rarityHigh:'Редкость: по убыванию',range:'Диапазон',setsTitle:'Стоимость наборов MM2',setsDesc:'Актуальные значения наборов: спрос, редкость, стабильность и диапазон цены.',uniqueTitle:'Уникальные предметы MM2',uniqueDesc:'Уникальные, промо- и рейтинговые предметы с редкостью, владельцами и происхождением.',evoTitle:'Эволюции MM2',evoDesc:'Стадии эволюций, классы, редкость и требования EXP.',catalogDesc:'Ценность, спрос, редкость, стабильность, происхождение и изображения.',all:'Все',contains:'СОСТАВ / ПРОИСХОЖДЕНИЕ',value:'ЦЕННОСТЬ',demand:'СПРОС',rarity:'РЕДКОСТЬ',noResults:'Ничего не найдено. Измени запрос или сбрось фильтры.',items:'предметов',independent:'Независимый интерфейс • данные предоставлены пользователем',nav:{Home:'Главная','Trading Servers':'Торговые серверы','MM2 Trading':'MM2 трейды',Sets:'Наборы',Uniques:'Уникальные',Evos:'Эволюции',Ancients:'Древние',Vintages:'Винтажные',Chromas:'Хрома',Godlies:'Годли',Legendaries:'Легендарные',Rares:'Редкие',Uncommons:'Необычные',Commons:'Обычные',Pets:'Питомцы','Misc. Items':'Разное',Untradables:'Неторгуемые',Roblox:'Roblox'}},
     uk:{kicker:'MM2 VALUES • БАЗА СПІЛЬНОТИ',notSeers:'Предмети оцінюються не в Seers',updated:'Знімок даних: 9 липня 2026',rounding:'Деякі набори мають округлену вартість і можуть не збігатися з точною сумою предметів.',search:'Пошук за назвою або складом…',clear:'Скинути',allStability:'Будь-яка стабільність',valueHigh:'Цінність: за спаданням',valueLow:'Цінність: за зростанням',demandHigh:'Попит: за спаданням',rarityHigh:'Рідкість: за спаданням',range:'Діапазон',setsTitle:'Вартість наборів MM2',setsDesc:'Актуальні значення наборів: попит, рідкість, стабільність і діапазон ціни.',uniqueTitle:'Унікальні предмети MM2',uniqueDesc:'Унікальні, промо- та рейтингові предмети з рідкістю, власниками й походженням.',evoTitle:'Еволюції MM2',evoDesc:'Стадії еволюцій, класи, рідкість і вимоги EXP.',catalogDesc:'Цінність, попит, рідкість, стабільність, походження та зображення.',all:'Усі',contains:'СКЛАД / ПОХОДЖЕННЯ',value:'ЦІННІСТЬ',demand:'ПОПИТ',rarity:'РІДКІСТЬ',noResults:'Нічого не знайдено. Зміни запит або скинь фільтри.',items:'предметів',independent:'Незалежний інтерфейс • дані надані користувачем',nav:{Home:'Головна','Trading Servers':'Торгові сервери','MM2 Trading':'MM2 трейди',Sets:'Набори',Uniques:'Унікальні',Evos:'Еволюції',Ancients:'Стародавні',Vintages:'Вінтажні',Chromas:'Хрома',Godlies:'Годлі',Legendaries:'Легендарні',Rares:'Рідкісні',Uncommons:'Незвичайні',Commons:'Звичайні',Pets:'Улюбленці','Misc. Items':'Різне',Untradables:'Неторговані',Roblox:'Roblox'}}
   };
 
